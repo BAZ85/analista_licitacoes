@@ -1,0 +1,691 @@
+carregar_documentos:
+  description: >
+    Carregar o conteúdo textual de todos os documentos da licitação localizados na pasta 'documentos/'.
+    Aplicar OCR em PDFs não pesquisáveis. O texto bruto de cada arquivo deve ser extraído, sem realizar classificação de tipo 
+    ainda.
+  expected_output: >
+    Uma lista de documentos no seguinte formato:
+    [
+      {"nome_arquivo": "edital_licitacao.pdf", "conteudo": "..."},
+      {"nome_arquivo": "doc1.pdf", "conteudo": "..."},
+      ...
+    ]
+  agent: analista_documentos
+
+classificar_documentos:
+  description: >
+    Com base no conteúdo textual de cada documento extraído, classifique os documentos uma única vez como:
+    - edital
+    - termo_referencia
+    - etp
+    - outros
+    Use o conteúdo interno dos documentos, especialmente títulos e termos técnicos, para inferir seu tipo, mesmo que o nome do 
+    arquivo não indique isso. Retorne um dicionário com as chaves acima e os textos consolidados em cada uma delas.
+    Atente-se que poderá ocorrer de o TR e o ETP estarem em anexo do Edital. Nesse caso, o documento referente ao edital deverá 
+    ser classificado somente como edital.
+    TR e ETP somente constarão no output se houver mais de 1 documento a ser analisado, ou seja, o edital e mais outro(s).
+  expected_output: >
+    {
+      "edital": "<conteúdo do edital>",
+      "termo_referencia": "<conteúdo do Termo de Referência>",
+      "etp": "<conteúdo do Estudo Técnico Preliminar>",
+      "outros": ["<conteúdo de outros documentos 1>", "<conteúdo de outros documentos 2", "..."]
+    }
+  agent: analista_documentos
+  context: [carregar_documentos]
+  
+extrair_metadados:
+  description: >
+    A partir do texto consolidado, para extrair os seguintes metadados dos documentos submetido a análise: 
+    - Ente licitante;
+    - Número/ano da licitação (ex. 01/2023);
+    - Modalidade da licitação; e 
+    - Objeto resumido (ação principal como "aquisição de materiais", "contratação de serviços", "contratação de obra").
+    Não inclua nomes de arquivos nem informações estruturais do pipeline.
+  expected_output: >
+    Um dicionário com os seguintes campos extraídos do edital ou demais documentos:
+    {
+      "ente_licitante": "...",
+      "numero_ano_licitacao: "...",
+      "modalidade_licitacao": "...",
+      "objeto_licitacao": "..."
+    }
+  agent: extrator_metadata
+  context: [classificar_documentos]
+  metadata:
+    prompt_file: prompts/prompt_01
+
+analisar_prompt_01:
+  description: >
+    Analise os documentos fornecidos, conforme 'context', conforme prompt 01, conforme segue:
+    <tarefa>
+    Examine cuidadosamente os documentos fornecidos (Edital, Termo de Referência, Estudo Técnico Preliminar e outros) e responda 
+    à seguinte pergunta: 
+    <pergunta>
+    A licitação será realizada presencialmente? Justifique. Além disso, há no Estudo Técnico Preliminar ou no Termo de Referência 
+    justificativa para a adoção da modalidade presencial em detrimento da modalidade eletrônica?
+    </pergunta>
+    </tarefa>
+    <critérios_e_instruções>
+    1. Verificação das Cláusulas:
+      - Analise inicialmente o documento referente ao Edital da licitação e verificar se o certame será realizado no formato 
+      eletrônico ou presencial.
+      - Caso seja no formato presencial você deverá analisar, também, os documentos referentes ao Estudo Técnico Preliminar e 
+      ao Termo de Referência com o objetivo de verificar se existe justificativa para a realização da licitação no formato 
+      presencial.
+      - A resposta 'sim' à pergunta é indicativo de existência de irregularidade.
+    2. Considerações Semânticas:
+      - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
+    3. Restrições Importantes:
+      - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
+      - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
+    </critérios_e_instruções>
+    <fundamento_legal>
+    Lei nº 14.133/2021, art. 17, § 2º; Acórdão TCU nº 2.118/2024 - Plenário.
+    </fundamento_legal>
+    <código_da_irregularidade>
+    GC_79. Licitação/Contratação Direta (Moderada). Pregão na forma presencial sem comprovação da indisponibilidade do sistema 
+    eletrônica ou a existência de relevante e excepcional interesse público, devidamente justificado.
+    </código_da_irregularidade>
+    <exemplos>
+    Exemplo 1 (Resposta “Sim”):
+      Trecho do Edital: "X.	O MUNICÍPIO DE XXX, inscrita no CNPJ/MF n. {número do CNPJ}, com sede na {endereço}, neste Município 
+      de XXX, através da SECRETARIA DE GOVERNO, GESTÃO E PLANEJAMENTO ,interessada(s), por intermédio do(a) AGENTE DE CONTRATAÇÃO 
+      designado (a) pela Portaria nº xx, de 202x, Sr. (a). {Nome do agente de contratação}, torna público para conhecimento de 
+      quantos possam se interessar, que fará realizar licitação na modalidade de PREGÃO PRESENCIAL, do tipo MENOR PREÇO POR ITEM 
+      conforme descrito neste edital e seus anexos, sendo regido em obediência aos dispositivos do A licitação será regida pela 
+      Lei Federal nº 14.133, de 2021 e, complementarmente, pela Lei Complementar Federal nº 123, de 2006 e pelo Decreto Federal 
+      nº 8.538, de 2015 e o Diário Oficial Eletrônico do Tribunal de Contas de MT, como veículos oficiais de publicações dos 
+      Atos dos Processos Licitatórios Municipais, bem como, com as demais normas vigentes que dispõe sob a aquisição e contratação 
+      pela Administração Pública e nos termos estabelecidos neste Edital."
+        Resposta:
+          Saída: Sim
+          Justificativa: “A cláusula X do edital prevê expressamente que a licitação será realizada na modalidade presencial."
+          Código da Irregularidade: campo com o código e descrição da irregularidade, obrigatório se a saída for "sim".
+          Resumo do Achado: neste campo você deve apresentar um breve resumo do achado
+          Fundamento Legal: campo com o fundamento legal para a irregularidade
+    Exemplo 2 (Resposta “Não”):
+      Trecho do Edital: "1.1 O Município de XX, Estado de Mato Grosso, por meio de seu (ua) Agente de Contratação, {nome do agente 
+      de contratação}, designado pela portaria Nº xx, {data da portaria}, com endereço à {endereço}, isento de inscrição estadual, 
+      torna público a abertura do Processo Licitatório, na modalidade Pregão Eletrônico, sob a égide da Lei Federal nº 14.133/2021 
+      e todas as suas regulamentações municipais e federais aplicáveis, do Acordo de Cooperação Técnica para Utilização de Sistema 
+      Informatizado de Licitações, firmado com a BLL, bem como as condições estabelecidas neste Edital e seus Anexos."
+        Resposta:
+          Saída: Não
+          Justificativa: "O item 1.1. do edital prevê expressamente que a licitação será realizada na modalidade eletrônica."
+    </exemplos>
+    <verificacao>
+    Antes de retornar a resposta final ao usuário, faça uma nova análise dos documentos fornecidos e da resposta inicialmente 
+    gerada para verificar a existência de possíveis incorreções ou lacunas que possam ser complementadas. Apenas após essa 
+    verificação, retorne a resposta final ao usuário.
+    </verificacao>
+    <observacoes_finais>
+    Utilize esta estrutura para garantir uma análise sistemática, clara e fundamentada, sempre se baseando nos trechos do edital 
+    e nos fundamentos legais indicados. Mantenha a objetividade e não extrapole as informações presentes nos documentos.
+    </observacoes_finais>
+  expected_output: >
+    A saída deverá ser gerada conforme estrutura abaixo, em formato json:
+    {
+    "analises": [
+    {
+      "numero_prompt": "01",
+      "pergunta": "<exatamente como está description da task, entre os delimitadores da pergunta. Apresentar texto completo 
+      da pergunta, ainda que seja composta em mais de um questionamento>",
+      "saida": "<Sim ou não>",
+      "justificativa": "<trecho do edital, tr ou etp que fundamenta a resposta, sendo vedado respostas genéricas>",
+      "codigo_irregularidade": "<se saida for sim, será exatamente como descrito no prompt, entre os delimitadores 
+      'codigo_da_irregularidade'>",
+      "fundamento_legal": "<se a saida for sim, será exatamente como descrito no prompt, entre os delimitadores 'fundamento_legal'>"
+    },
+    }
+  agent: executor_prompt_01
+  context: [classificar_documentos]
+
+analisar_prompt_02:
+  description: >
+    Analise os documentos fornecidos, conforme 'context', conforme prompt 02, conforme segue:
+    <tarefa>
+    Examine cuidadosamente os documentos fornecidos (Edital, Termo de Referência, Estudo Técnico Preliminar e outros) e responda 
+    à seguinte pergunta:
+    <pergunta>
+    "O edital da licitação contém cláusula que vede a participação de empresa em recuperação judicial ou extrajudicial?"
+    </pergunta>
+    </tarefa>
+    <critérios_e_instruções>
+    1. Verificação das Cláusulas:
+      - Analise o documento referente ao Edital da licitação e verifique se este documento contém cláusula que proíba a 
+      participação no certame de empresas em recuperação judicial e/ou extrajudicial.
+      - Analise, também, se existe cláusula que exija a apresentação de certidão negativa (ou positiva com efeitos de negativa) 
+      de recuperação judicial e/ou extrajudicial.
+      - Analise, ainda, o Termo de Referência e o Estudo Técnico Preliminar (quando fornecidos), buscando identificar se foi 
+      apresentada alguma justificativa para a vedação quanto a participação de empresas em recuperação juidical e/ou extrajudicial.
+      - Para fins dessa análise, não deverão ser considerados como sinônimos da "recuperação judicial" os institutos da "falência" 
+      e da "concordata". Para estes últimos, é regular a exigência de certidão negativa de falência e/ou concordata. Sendo assim, 
+      considera-se irregular a exigência, no edital da licitação, de apresentação de certidão negativa de recuperação judicial ou 
+      extrajudicial.
+      - A resposta 'sim' à pergunta é indicativo de existência de irregularidade.
+    2. Considerações Semânticas:
+      - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
+    3. Restrições Importantes:
+      - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
+      - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
+    </critérios_e_instruções>
+    <fundamento_legal>
+    Lei nº 14.133/2021, art. 69, inciso II; Acórdão TCU nº 1.697/2023 - Plenário; e REsp nº 1.826.299/CE.
+    </fundamento_legal>
+    <código_da_irregularidade>
+    GC_76. Licitação/Contratação Direta (Moderada). Licitação com exigências para comprovação de qualificação econômico-financeira 
+    não previstas ou vedadas pela legislação (art. 69, da Lei nº 14.133/2021.
+    </código_da_irregularidade> 
+    <exemplos>
+    Exemplo 1 (Resposta “Sim”):
+    Trecho do Edital: "7.3. NÃO SERÁ ADMITIDA NESTA LICITAÇÃO A PARTICIPAÇÃO DE EMPRESAS:
+    7.6.10	Que se encontrem sob falência, concurso de credores ou insolvência, em processo de dissolução ou liquidação;
+    7.6.10.1. No caso de certidão positiva de recuperação judicial ou extrajudicial, o licitante deverá apresentar a comprovação 
+    de que o respectivo plano de recuperação foi acolhido judicialmente, na forma do art. 58, da Lei n. 11.101/05, sob pena de 
+    inabilitação, devendo, ainda, comprovar todos os demais requisitos de habilitação;"
+    Resposta:
+      Saída: Sim
+      Justificativa: “O item 7.6.10.1 veda indiretamente a participação de empresa em recuperação judicial e/ou extrajudicial 
+      ao impor requisito não previsto na Lei nº 14.133/2021 como condição de habilitação econômico-financeira da licitante que 
+      apresente certidão positiva de recuperação judicial e/ou extrajudicial".
+      Código da Irregularidade: campo com o código e descrição da irregularidade
+      Resumo do Achado: neste campo você deve apresentar um breve resumo do achado
+      Fundamento Legal: campo com o fundamento legal para a irregularidade
+    Exemplo 2 (Resposta “Não”):
+      Trecho do Edital: "8.3 DOCUMENTOS DE HABILITAÇÃO ECONÔMICO-FINANCEIRA:
+      8.3.1 para pessoa jurídica:
+      a)	certidão negativa de feitos sobre falência expedida pelo distribuidor da sede do licitante;"
+        Resposta:
+          Saída: Não
+          Justificativa: "O item 8.3.1, alínea 'a' do edital da licitação exige a apresentação de certidão negativa de feitos 
+          sobre falência, não vedando a participação de empresas em recuperação judicial e/ou extrajudicial, nem exigindo a 
+          apresentação de certidão negativa de recuperação judicial e/ou extrajudicial."
+    </exemplos>
+    <verificacao>
+    Antes de retornar a resposta final ao usuário, faça uma nova análise dos documentos fornecidos e da resposta inicialmente 
+    gerada para verificar a existência de possíveis incorreções ou lacunas que possam ser complementadas. Apenas após essa 
+    verificação, retorne a resposta final ao usuário.
+    </verificacao>
+    <observacoes_finais>
+    Utilize esta estrutura para garantir uma análise sistemática, clara e fundamentada, sempre se baseando nos trechos do edital 
+    e nos fundamentos legais indicados. Mantenha a objetividade e não extrapole as informações presentes nos documentos.
+    </observacoes_finais>
+  expected_output: >
+    A saída deverá ser gerada conforme estrutura abaixo, em formato json:
+    {
+    "analises": [
+    {
+      "numero_prompt": "02",
+      "pergunta": "<exatamente como está description da task, entre os delimitadores da pergunta. Apresentar texto completo 
+      da pergunta, ainda que seja composta em mais de um questionamento>",
+      "saida": "<Sim ou não>",
+      "justificativa": "<trecho do edital, tr ou etp que fundamenta a resposta, sendo vedado respostas genéricas>",
+      "codigo_irregularidade": "<se saida for sim, será exatamente como descrito no prompt, entre os delimitadores 
+      'codigo_da_irregularidade'>",
+      "fundamento_legal": "<se a saida for sim, será exatamente como descrito no prompt, entre os delimitadores 'fundamento_legal'>"
+    },
+    }
+  agent: executor_prompt_02
+  context: [classificar_documentos]
+
+analisar_prompt_03:
+  description: >
+    Analise os documentos fornecidos, conforme 'context', conforme prompt 03, conforme segue:
+    <tarefa>
+    Examine cuidadosamente os documentos fornecidos (Edital, Termo de Referência, Estudo Técnico Preliminar e outros) e responda 
+    à seguinte pergunta:
+    <pergunta>
+    "É prevista vedação a participação de empresas em consórcio na licitação?"
+    </pergunta>
+    </tarefa>
+    <critérios_e_instruções>
+    1. Verificação das Cláusulas:
+      - Analise minuciosamente os documentos da licitação buscando encontrar qualquer cláusula que vede a participação de 
+      empresas em consórcio na licitação.
+     - Considere como análogos à vedação de consórcios as expressões "empresas em consórcio" e "empresas consorciadas".
+     - A resposta 'sim' à pergunta é indicativo de existência de irregularidade.
+    2. Considerações Semânticas:
+      - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
+    3. Restrições Importantes:
+      - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
+      - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
+    </critérios_e_instruções>
+    <fundamento_legal>
+    Artigo 15, da Lei nº 14.133/2021. Acórdão nº 948/2014 - Plenário.
+    </fundamento_legal>
+    <código_da_irregularidade>
+    G_99. Licitação/Contratação Direta (A classificar). Irregularidade referente a licitação, dispensa ou inexigibilidade  de licitação
+    não contemplada em classificação específica.
+    </código_da_irregularidade> 
+    <exemplos>
+    Exemplo 1 (Resposta “Sim”):
+      Trecho do Edital: "Não poderá participar da presente licitação: pessoas jurídicas reunidas em consórcio;"
+        Resposta:
+          Saída: Sim
+          Justificativa: “A cláusula X do edital prevê expressamente que a vedação da participação de empresas em consórcio."
+          Código da Irregularidade: campo com o código e descrição da irregularidade
+          Resumo do Achado: neste campo você deve apresentar um breve resumo do achado
+          Fundamento Legal: campo com o fundamento legal para a irregularidade
+    Exemplo 2 (Resposta “Não”):
+      Trecho do Edital: "X. É admitida a participação de empresas em consórcio."
+        Resposta:
+          Saída: Não
+          Justificativa: "A cláusula X do edital expressamente admite a participação de consórcios na licitação em análise".
+    </exemplos>
+    <verificacao>
+    Antes de retornar a resposta final ao usuário, faça uma nova análise dos documentos fornecidos e da resposta inicialmente 
+    gerada para verificar a existência de possíveis incorreções ou lacunas que possam ser complementadas. Apenas após essa 
+    verificação, retorne a resposta final ao usuário.
+    </verificacao>
+    <observacoes_finais>
+    Utilize esta estrutura para garantir uma análise sistemática, clara e fundamentada, sempre se baseando nos trechos do edital 
+    e nos fundamentos legais indicados. Mantenha a objetividade e não extrapole as informações presentes nos documentos.
+    </observacoes_finais>
+  expected_output: >
+    A saída deverá ser gerada conforme estrutura abaixo, em formato json:
+    {
+    "analises": [
+    {
+      "numero_prompt": "03",
+      "pergunta": "<exatamente como está description da task, entre os delimitadores da pergunta. Apresentar texto completo 
+      da pergunta, ainda que seja composta em mais de um questionamento>",
+      "saida": "<Sim ou não>",
+      "justificativa": "<trecho do edital, tr ou etp que fundamenta a resposta, sendo vedado respostas genéricas>",
+      "codigo_irregularidade": "<se saida for sim, será exatamente como descrito no prompt, entre os delimitadores 
+      'codigo_da_irregularidade'>",
+      "fundamento_legal": "<se a saida for sim, será exatamente como descrito no prompt, entre os delimitadores 'fundamento_legal'>"
+    },
+    }
+  agent: executor_prompt_03
+  context: [classificar_documentos]
+
+analisar_prompt_04:
+  description: >
+    Analise os documentos fornecidos, conforme 'context', conforme prompt 04, conforme segue:
+    <tarefa>
+    Examine cuidadosamente os documentos fornecidos (Edital, Termo de Referência, Estudo Técnico Preliminar e outros) e responda 
+    à seguinte pergunta:
+    <pergunta>
+    "Nos documentos do processo licitatório, consta a obrigatoriedade de retirada presencial do edital, ou a obrigatoriedade de
+    entrega de recibo de retirada do edital ou ainda a realização de cadastro prévio para retirada dos documentos da licitação?"
+    </pergunta>   
+    </tarefa>    
+    <critérios_e_instruções>
+    1. Verificação das Cláusulas:
+     - Analise minuciosamente os documentos da licitação buscando encontrar qualquer cláusula que exija a identificação prévia 
+     dos licitantes para a obtenção dos documentos da licitação.
+     - Considere como análogos à identificação prévia ou exigências com a mesma finalidade, como a realização de cadastro prévio
+     ou a obrigatoriedade de entrega de recibo de retirada do edital (ou dos documentos da licitação).
+    2. Considerações Semânticas:
+      - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
+    3. Restrições Importantes:
+      - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
+      - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
+    </critérios_e_instruções>
+    <fundamento_legal>
+    Art. 37, da CF/88; art. 5º, da Lei nº 14.133/2021; Acórdão nº 131/2021 - Plenário; e Acórdão TCU nº 3.192/2016.
+    </fundamento_legal>
+    <código_da_irregularidade>
+    GB 07. Licitação/Contratação Direta (Grave). Licitação com exigência de registro prévio, cadastro e/ou identificação para 
+    acesso ao edital e todos os seus elementos, inclusive minuta do contrato, termos de referência, anteprojeto, projeto e outros 
+    anexos.
+    </código_da_irregularidade>  
+    <exemplos>
+    Exemplo 1 (Resposta “Sim”):
+      Trecho do Edital: "X. O edital da licitação estará disponível no sítio eletrônico do Município, mediante acesso com login 
+      e senha do licitante."
+        Resposta:
+          Saída: Sim
+          Justificativa: “A cláusula X do edital exige a identificação prévia do licitante com login e senha para obtenção 
+          dos documentos da licitação.”
+          Código da Irregularidade: campo com o código e descrição da irregularidade
+          Resumo do Achado: neste campo você deve apresentar um breve resumo do achado
+          Fundamento Legal: campo com o fundamento legal para a irregularidade
+    Exemplo 2 (Resposta “Não”):
+      Trecho do Edital: "XX. O edital e demais documentos da licitação estarão disponíveis no site do Município."
+        Resposta:
+          Saída: Não
+          Justificativa: "A Cláusula XX do edital prevê com o edital e demais documentos da licitação estarão disponíveis no 
+          site do Município".
+    </exemplos>
+    <verificacao>
+    Antes de retornar a resposta final ao usuário, faça uma nova análise dos documentos fornecidos e da resposta inicialmente 
+    gerada para verificar a existência de possíveis incorreções ou lacunas que possam ser complementadas. Apenas após essa 
+    verificação, retorne a resposta final ao usuário.
+    </verificacao>
+    <observacoes_finais>
+    Utilize esta estrutura para garantir uma análise sistemática, clara e fundamentada, sempre se baseando nos trechos do edital 
+    e nos fundamentos legais indicados. Mantenha a objetividade e não extrapole as informações presentes nos documentos.
+    </observacoes_finais>
+  expected_output: >
+    A saída deverá ser gerada conforme estrutura abaixo, em formato json:
+    {
+    "analises": [
+    {
+      "numero_prompt": "04",
+      "pergunta": "<exatamente como está description da task, entre os delimitadores da pergunta. Apresentar texto completo 
+      da pergunta, ainda que seja composta em mais de um questionamento>",
+      "saida": "<Sim ou não>",
+      "justificativa": "<trecho do edital, tr ou etp que fundamenta a resposta, sendo vedado respostas genéricas>",
+      "codigo_irregularidade": "<se saida for sim, será exatamente como descrito no prompt, entre os delimitadores 
+      'codigo_da_irregularidade'>",
+      "fundamento_legal": "<se a saida for sim, será exatamente como descrito no prompt, entre os delimitadores 'fundamento_legal'>"
+    },
+    }
+  agent: executor_prompt_04
+  context: [classificar_documentos]
+
+analisar_prompt_05:
+  description: >
+    Analise os documentos fornecidos, conforme 'context', conforme prompt 05, conforme segue:
+    <tarefa>
+    Examine cuidadosamente os documentos fornecidos (Edital, Termo de Referência, Estudo Técnico Preliminar e outros) e responda 
+    à seguinte pergunta:
+    <pergunta>
+    "Os documentos da licitação contém cláusula que exija que a apresentação de recursos ou impugnações sejam realizadas de 
+    forma presencial?"
+    </pergunta>   
+    </tarefa>    
+    <critérios_e_instruções>
+    1. Verificação das Cláusulas:
+    - Analise minuciosamente os documentos da licitação buscando encontrar qualquer cláusula que exija que a apresentação de 
+    recursos, impugnações ou esclarecimentos quanto ao processo licitatório sejam realizadas de forma presencial.
+    - Considere como análogos ao protocolo presencial, disposições semelhantes como apresentação via protocolo, apresentação 
+    junto ao pregoeiro (agente de contratação) e outras que tenham mesmo conteúdo semântico.
+    2. Considerações Semânticas:
+      - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
+    3. Restrições Importantes:
+      - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
+      - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
+    </critérios_e_instruções>
+    <fundamento_legal>
+    Art. 37, da CF/88; art. 5º e 11, II, da Lei nº 14.133/2021; e Acórdão nº 68/2018 - 2ª Câmara.
+    </fundamento_legal>
+    <código_da_irregularidade>
+    GB 04. Licitação/Contratação Direta (Grave). Licitação com tratamento desigual entre os licitantes e/ou atos que não promovam 
+    justa competição (art. 11, II, da Lei nº 14.133/2021).
+    </código_da_irregularidade>    
+    <exemplos>
+    Exemplo 1 (Resposta “Sim”):
+      Trecho do Edital: "X. O recurso interposto deverá ser protocolado junto ao Agente de Contratação DO MUNICIPIO DE 
+      HORIZONTINA."
+        Resposta:
+          Saída: Sim
+          Justificativa: “A cláusula X do edital exige que a interposição de recursos deverá ser realizada junto ao Agente de 
+          Contratação do Município.”
+          Código da Irregularidade: campo com o código e descrição da irregularidade
+          Resumo do Achado: neste campo você deve apresentar um breve resumo do achado
+          Fundamento Legal: campo com o fundamento legal para a irregularidade
+    Exemplo 2 (Resposta “Não”):
+      Trecho do Edital: "X. As razões de recurso deverão ser protocoladas, no prazo supra, junto ao Departamento de Licitações 
+      da Prefeitura Municipal de Horizontina/MT ou através do endereço digital, ambos descritos no item Y deste edital."
+        Resposta:
+          Saída: Não
+          Justificativa: "A Cláusula X do edital possibilita que os recrusos sejam protocolados por meio do endereço digital 
+          constante no edital."
+    </exemplos>
+    <verificacao>
+    Antes de retornar a resposta final ao usuário, faça uma nova análise dos documentos fornecidos e da resposta inicialmente 
+    gerada para verificar a existência de possíveis incorreções ou lacunas que possam ser complementadas. Apenas após essa 
+    verificação, retorne a resposta final ao usuário.
+    </verificacao>
+    <observacoes_finais>
+    Utilize esta estrutura para garantir uma análise sistemática, clara e fundamentada, sempre se baseando nos trechos do edital 
+    e nos fundamentos legais indicados. Mantenha a objetividade e não extrapole as informações presentes nos documentos.
+    </observacoes_finais>
+  expected_output: >
+    A saída deverá ser gerada conforme estrutura abaixo, em formato json:
+    {
+    "analises": [
+    {
+      "numero_prompt": "05",
+      "pergunta": "<exatamente como está description da task, entre os delimitadores da pergunta. Apresentar texto completo 
+      da pergunta, ainda que seja composta em mais de um questionamento>",
+      "saida": "<Sim ou não>",
+      "justificativa": "<trecho do edital, tr ou etp que fundamenta a resposta, sendo vedado respostas genéricas>",
+      "codigo_irregularidade": "<se saida for sim, será exatamente como descrito no prompt, entre os delimitadores 
+      'codigo_da_irregularidade'>",
+      "fundamento_legal": "<se a saida for sim, será exatamente como descrito no prompt, entre os delimitadores 'fundamento_legal'>"
+    },
+    }
+  agent: executor_prompt_05
+  context: [classificar_documentos]
+
+analisar_prompt_06:
+  description: >
+    Analise os documentos fornecidos, conforme 'context', conforme prompt 06, conforme segue:
+    <tarefa>
+    Examine cuidadosamente os documentos fornecidos (Edital, Termo de Referência, Estudo Técnico Preliminar e outros) e responda 
+    à seguinte pergunta:
+    <pergunta>
+    "Os documentos da licitação exigem que o licitante tenha ou abra sede, estabelecimento, filial, escritório ou domicílio 
+    localizados no ente que está promovendo a licitação?"
+    </pergunta>   
+    </tarefa>    
+    <critérios_e_instruções>
+    1. Verificação das Cláusulas:
+      - Procure por cláusulas que exijam que o licitante possua sede, filial, escritório, domicílio, qualquer estrutura física 
+      similar no ente licitante ou na sua região de abrangência,
+      - Procure também por restrições indiretas, como a necessidade de credenciamento, autorização ou registro em órgãos municipais
+      e/ou estaduais (por exemplo, Vigilância Sanitária) que, na prática, limitem a participação com base na localização do 
+      licitante.
+      - Identifique e tenha especial atenção às exigências que condicionem a participação na licitação ao registro, credenciamento 
+      ou autorização emitidos por órgãos municipais ou estaduais (por exemplo, Vigilância Sanitária), quando estes estiverem 
+      vinculados à localização do ente/órgão contratante ou região de abrangência do contratante ou unidade administrativa 
+      vinculada a este.
+      - Analise minuciosamente tanto o corpo do edital como também todos os anexos, incluindo o Termo de Referência e eventuais 
+      instruções normativas complementares.
+      - Procure no edital qualquer referência a necessidade de a empresa licitante possuir sede, filial, escritório, domicílio, 
+      qualquer estrutura física similar em localidade específica e, na sequência, avalie se essa referência se enquadra na 
+      irregularidade em análise.
+    2. Considerações Semânticas:
+      - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
+      - Leve em conta sinônimos e termos correlatos, tais como: “sucursal”, “agência”, “ponto de atendimento”, “estrutura física 
+      obrigatória”, “capacidade operacional no município”, “credenciamento regional” ou “alvará de funcionamento emitido pelo 
+      ente licitante”.
+    3. Restrições Importantes:
+      - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
+      - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
+    </critérios_e_instruções>
+    <fundamento_legal>
+    Lei nº 14.133/2021, art. 5º e 9º, I, alínea b; Acórdão TCU nº 6.233/2009 - Primeira Câmara.
+    </fundamento_legal>
+    <código_da_irregularidade>
+    GB 04. Licitação/Contratação Direta (Grave). Licitação com tratamento desigual entre os licitantes e/ou atos que não promovam 
+    justa competição (art. 11, II, da Lei nº 14.133/2021).
+    </código_da_irregularidade>    
+    <exemplos>
+    Exemplo 1 (Resposta “Sim”):
+      Trecho do Edital: "X. Só poderão participar das concessões... empresas que estejam sediadas ou possuam filial na região 
+      de abrangência do serviço de Reabilitação."
+        Resposta:
+          Saída: Sim
+          Justificativa: “A cláusula X do edital impõe que o licitante esteja sediado ou possua filial na região do ente licitante.”
+          Código da Irregularidade: campo com o código e descrição da irregularidade
+          Resumo do Achado: neste campo você deve apresentar um breve resumo do achado
+          Fundamento Legal: campo com o fundamento legal para a irregularidade
+    Exemplo 2 (Resposta “Não”):
+      Trecho do Edital: "X.X Alvará de localização e funcionamento da sede do licitante."
+        Resposta:
+          Saída: Não
+          Justificativa: "A Cláusula X.X do edital exige documentação referente à sede do licitante, sem impor que ela esteja 
+          localizada no ente licitante ou em sua região.”
+    </exemplos>
+    <verificacao>
+    Antes de retornar a resposta final ao usuário, faça uma nova análise dos documentos fornecidos e da resposta inicialmente 
+    gerada para verificar a existência de possíveis incorreções ou lacunas que possam ser complementadas. Apenas após essa 
+    verificação, retorne a resposta final ao usuário.
+    </verificacao>
+    <observacoes_finais>
+    Utilize esta estrutura para garantir uma análise sistemática, clara e fundamentada, sempre se baseando nos trechos do edital 
+    e nos fundamentos legais indicados. Mantenha a objetividade e não extrapole as informações presentes nos documentos.
+    </observacoes_finais>
+  expected_output: >
+    A saída deverá ser gerada conforme estrutura abaixo, em formato json:
+    {
+    "analises": [
+    {
+      "numero_prompt": "06",
+      "pergunta": "<exatamente como está description da task, entre os delimitadores da pergunta. Apresentar texto completo 
+      da pergunta, ainda que seja composta em mais de um questionamento>",
+      "saida": "<Sim ou não>",
+      "justificativa": "<trecho do edital, tr ou etp que fundamenta a resposta, sendo vedado respostas genéricas>",
+      "codigo_irregularidade": "<se saida for sim, será exatamente como descrito no prompt, entre os delimitadores 
+      'codigo_da_irregularidade'>",
+      "fundamento_legal": "<se a saida for sim, será exatamente como descrito no prompt, entre os delimitadores 'fundamento_legal'>"
+    },
+    }
+  agent: executor_prompt_06
+  context: [classificar_documentos]
+
+analisar_prompt_07:
+  description: >
+    Analise os documentos fornecidos, conforme 'context', conforme prompt 07, conforme segue:
+    <tarefa>
+    Examine cuidadosamente os documentos fornecidos (Edital, Termo de Referência, Estudo Técnico Preliminar e outros) e responda 
+    à seguinte pergunta:
+    <pergunta>
+    "Os documentos da licitação contêm cláusula que faça indicação expressa ou implícita de marca, fabricante ou modelo específico, 
+    sem a justificativa técnica exigida pela legislação?"
+    </pergunta>   
+    </tarefa>    
+    <critérios_e_instruções>
+    1. Verificação das Cláusulas:
+      - Identifique cláusulas ou trechos que mencionem expressamente marcas, modelos ou fabricantes específicos dos bens a serem 
+      adquiridos ou serviços a serem contratados.
+      - Observe também a indicação implícita, como referência técnica restritiva que indique claramente preferência ou exclusividade 
+      a determinada marca, modelo ou fabricante.
+      - Verifique minuciosamente o corpo do edital, anexos técnicos, Termo de Referência e Estudo Técnico Preliminar.
+      - Avalie se há justificativa técnica fundamentada explicitamente apresentada nos documentos, quando houver indicação de 
+      marca ou fabricante.
+    2. Considerações Semânticas:
+      - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
+      - Esteja atento para termos correlatos, como "marca de referência", "modelo padrão", "marca preferencial", "equivalente 
+      técnico exclusivo", "padrão comercial específico", entre outros que possam indicar restrição indireta.
+    3. Restrições Importantes:
+      - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
+      - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
+    </critérios_e_instruções>
+    <fundamento_legal>
+    Art. 37, da CF/88; art. 41, I, da Lei nº 14.133/2021; Acórdão nº 319/2023 - PV; Súmula TCU n 270.
+    </fundamento_legal>
+    <código_da_irregularidade>
+    GB 60 – Licitação/Contratação Direta (Grave). Licitação para fornecimento de bens com indicação de marca, fabricante ou produto 
+    específico sem justificativa técnica fundamentada ou com justificativa divergente das hipóteses permitidas pela legislação 
+    (art. 41, I, da Lei nº 14.133/2021).
+    </código_da_irregularidade>    
+    <exemplos>
+    Exemplo 1 (Resposta “Sim”):
+      Trecho do Edital: "Item 5.2 - Deverá ser fornecido o equipamento da marca ABC, modelo XYZ-500."   
+        Resposta:
+          Saída: Sim
+          Justificativa: “A cláusula 5.2 do edital exige explicitamente o fornecimento do equipamento com marca específica ABC, 
+          modelo XYZ, sem apresentação de justificativa técnica fundamentada para esta indicação, restringindo indevidamente a 
+          competição.”
+          Código da Irregularidade: campo com o código e descrição da irregularidade
+          Resumo do Achado: neste campo você deve apresentar um breve resumo do achado
+          Fundamento Legal: campo com o fundamento legal para a irregularidade
+    Exemplo 2 (Resposta “Não”):
+      Trecho do Edital: "Item 7.3 - Os equipamentos devem possuir características mínimas conforme descrição técnica constante 
+      no Anexo I, admitindo-se produtos equivalentes de marcas diversas."
+        Resposta:
+          Saída: Não
+          Justificativa: "A Cláusula 7.3 do edital O edital prevê características técnicas mínimas e permite expressamente a 
+          participação de produtos equivalentes, sem indicar marca específica ou restrição.".
+    </exemplos>
+    <verificacao>
+    Antes de retornar a resposta final ao usuário, faça uma nova análise dos documentos fornecidos e da resposta inicialmente 
+    gerada para verificar a existência de possíveis incorreções ou lacunas que possam ser complementadas. Apenas após essa 
+    verificação, retorne a resposta final ao usuário.
+    </verificacao>
+    <observacoes_finais>
+    Utilize esta estrutura para garantir uma análise sistemática, clara e fundamentada, sempre se baseando nos trechos do edital 
+    e nos fundamentos legais indicados. Mantenha a objetividade e não extrapole as informações presentes nos documentos.
+    </observacoes_finais>
+  expected_output: >
+    A saída deverá ser gerada conforme estrutura abaixo, em formato json:
+    {
+    "analises": [
+    {
+      "numero_prompt": "07",
+      "pergunta": "<exatamente como está description da task, entre os delimitadores da pergunta. Apresentar texto completo 
+      da pergunta, ainda que seja composta em mais de um questionamento>",
+      "saida": "<Sim ou não>",
+      "justificativa": "<trecho do edital, tr ou etp que fundamenta a resposta, sendo vedado respostas genéricas>",
+      "codigo_irregularidade": "<se saida for sim, será exatamente como descrito no prompt, entre os delimitadores 
+      'codigo_da_irregularidade'>",
+      "fundamento_legal": "<se a saida for sim, será exatamente como descrito no prompt, entre os delimitadores 'fundamento_legal'>"
+    },
+    }
+  agent: executor_prompt_07
+  context: [classificar_documentos]
+
+validar_estrutura_analise:
+  description: >
+    Validar a estrutura e a completude dos relatórios gerados pelo executor de prompts.    
+    Para cada análise, verifique:
+    1. Se todos os campos obrigatórios estão presentes:
+       - Número do prompt: corresponde ao número do prompt executado, sequencialmente, sem repetir ou pular números, e na 
+       sequência exata em que analisado, conforme sequencia das tasks
+       - Pergunta: corresponde ao texto exato da pergunta contida no prompt executado, no campo <pergunta>
+       - saída (sim/não)
+       - justificativa
+       - código da irregularidade (obrigatório se a saída for “sim” e igual ao contido prompt executado)
+       - resumo do achado (obrigatório se a saída for “sim”)
+       - fundamento legal (obrigatório se a saída for “sim” e igual ao contido no prompt executado)
+    2. Se a justificativa realmente cita trechos dos documentos analisados.
+    3. Se os fundamentos legais estão exatamente iguais aos descritos nas instruções de análise, no campo <fundamento_legal>.
+    4. Se os códigos de irregularidade estão examente iguais aos descritos nas instruções de análise, no campo
+    <codigo_da_irregularidade>.
+    5. Se há trechos copiados literalmente de exemplos de estrutura, mas sem correspondência nos dados analisados.
+    Aponte os problemas identificados em cada item analisado. Para cada erro ou omissão, forneça:
+    - Campo com problema
+    - Explicação do problema
+    - Sugestão de correção
+    5. Cada análise (pergunta) deverá aparecer apenas uma vez no relatório de análises.
+  expected_output: >
+    Um relatório claro contendo, para cada item analisado:
+    - Status da análise (Aprovada ou Reprovada)
+    - Lista de problemas encontrados (se houver)
+    - Sugestões de correção específicas
+    Se todas estiverem corretas, escreva “Análise aprovada. Nenhum problema identificado.”
+  agent: validador
+
+consolidar_respostas:
+  description: >
+    Consolida as respostas fornecidas pelos agentes 'extrator_metadados' e 'executor_prompts' nas etapas anteriores em um único 
+    resultado estruturado.
+    O arquivo json gerado deverá conter 2 chaves: a primeira com os metadados fornecidos pelo agente 'extrator_metadados' e a
+    segunda com as respostas das análises do agente 'executor_prompts'.
+  expected_output: >
+    Um dicionário JSON contendo uma lista de análises realizadas com os campos:
+    {
+      "edital": {
+        "ente_licitante": "...",
+        "numero_ano_licitacao": "...",
+        "modalidade_licitacao": "...",
+        "objeto_licitacao": "..."
+      },
+      "analises": [
+        {
+          "numero_prompt": "...",
+          "pergunta": "...",
+          "saida": "...",
+          "justificativa": "...",
+          "codigo_irregularidade": "...",
+          "fundamento_legal": "..."
+        },
+        // … demais analyses
+      ]
+    }
+  agent: consolidador_respostas
+  depends_on:
+    - extrair_metadados
+    - analisar_prompt_01
+    - analisar_prompt_02
+    - analisar_prompt_03
+    - analisar_prompt_04
+    - analisar_prompt_05
+    - analisar_prompt_06
+    - analisar_prompt_07
