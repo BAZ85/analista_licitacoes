@@ -8,7 +8,7 @@ from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DOCUMENTOS_DIR = os.path.join(BASE_DIR, "..", "..", "..", "documentos")
+DOCUMENTOS_DIR = os.path.join(BASE_DIR, "documentos")
 
 
 documentos_extraidos = []

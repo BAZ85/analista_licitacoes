@@ -59,7 +59,7 @@ def carregar_documentos() -> list:
             "conteudo": texto_extraido
         })
 
-        return documentos_extraidos
+    return documentos_extraidos
 
 
 def extrair_texto_pdf(caminho_pdf: str) -> str:
