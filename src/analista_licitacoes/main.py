@@ -64,7 +64,7 @@ def run():
             ws.write('A4', 'Objeto da licitação', header_fmt); ws.write('B4', md.get('objeto_licitacao', wrap_fmt))
 
             for col_num, title in enumerate(df.columns):
-                ws.write(5, col_num, title, header_fmt)
+                ws.write(6, col_num, title, header_fmt)
 
             for row_idx, row in enumerate(df.values, start=7):
                 for col_idx, cell in enumerate(row):
