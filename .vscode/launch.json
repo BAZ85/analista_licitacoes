@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🛠️ Debug main.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/analista_licitacoes/main.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        // adiciona a raiz do projeto ao PYTHONPATH
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    }
+  ]
+}

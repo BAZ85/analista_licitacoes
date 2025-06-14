@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang=en>
+  <head>
+    <title>ValueError: Error interpolating description: Invalid value for key &#39;arquivos_upload&#39;: Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+ // Werkzeug Debugger</title>
+    <link rel="stylesheet" href="?__debugger__=yes&amp;cmd=resource&amp;f=style.css">
+    <link rel="shortcut icon"
+        href="?__debugger__=yes&amp;cmd=resource&amp;f=console.png">
+    <script src="?__debugger__=yes&amp;cmd=resource&amp;f=debugger.js"></script>
+    <script>
+      var CONSOLE_MODE = false,
+          EVALEX = true,
+          EVALEX_TRUSTED = false,
+          SECRET = "j7U4EI9vP27cqT49n0oz";
+    </script>
+  </head>
+  <body style="background-color: #fff">
+    <div class="debugger">
+<h1>ValueError</h1>
+<div class="detail">
+  <p class="errormsg">ValueError: Error interpolating description: Invalid value for key &#39;arquivos_upload&#39;: Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+</p>
+</div>
+<h2 class="traceback">Traceback <em>(most recent call last)</em></h2>
+<div class="traceback">
+  <h3></h3>
+  <ul><li><div class="frame" id="frame-2261749439296">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py"</cite>,
+      line <em class="line">46</em>,
+      in <code class="function">interpolate_only</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">        </span>)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span># Validate all input values</pre>
+<pre class="line before"><span class="ws">    </span>for key, value in inputs.items():</pre>
+<pre class="line before"><span class="ws">        </span>try:</pre>
+<pre class="line current"><span class="ws">            </span>validate_type(value)
+<span class="ws">            </span>^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">        </span>except ValueError as e:</pre>
+<pre class="line after"><span class="ws">            </span>raise ValueError(f&#34;Invalid value for key &#39;{key}&#39;: {str(e)}&#34;) from e</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>if input_string is None or not input_string:</pre>
+<pre class="line after"><span class="ws">        </span>return &#34;&#34;</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749439440">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py"</cite>,
+      line <em class="line">36</em>,
+      in <code class="function">validate_type</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>return</pre>
+<pre class="line before"><span class="ws">        </span>if isinstance(value, (str, int, float, bool)):</pre>
+<pre class="line before"><span class="ws">            </span>return</pre>
+<pre class="line before"><span class="ws">        </span>if isinstance(value, (dict, list)):</pre>
+<pre class="line before"><span class="ws">            </span>for item in value.values() if isinstance(value, dict) else value:</pre>
+<pre class="line current"><span class="ws">                </span>validate_type(item)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">            </span>return</pre>
+<pre class="line after"><span class="ws">        </span>raise ValueError(</pre>
+<pre class="line after"><span class="ws">            </span>f&#34;Unsupported type {type(value).__name__} in inputs. &#34;</pre>
+<pre class="line after"><span class="ws">            </span>&#34;Only str, int, float, bool, dict, and list are allowed.&#34;</pre>
+<pre class="line after"><span class="ws">        </span>)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749439584">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py"</cite>,
+      line <em class="line">36</em>,
+      in <code class="function">validate_type</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>return</pre>
+<pre class="line before"><span class="ws">        </span>if isinstance(value, (str, int, float, bool)):</pre>
+<pre class="line before"><span class="ws">            </span>return</pre>
+<pre class="line before"><span class="ws">        </span>if isinstance(value, (dict, list)):</pre>
+<pre class="line before"><span class="ws">            </span>for item in value.values() if isinstance(value, dict) else value:</pre>
+<pre class="line current"><span class="ws">                </span>validate_type(item)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">            </span>return</pre>
+<pre class="line after"><span class="ws">        </span>raise ValueError(</pre>
+<pre class="line after"><span class="ws">            </span>f&#34;Unsupported type {type(value).__name__} in inputs. &#34;</pre>
+<pre class="line after"><span class="ws">            </span>&#34;Only str, int, float, bool, dict, and list are allowed.&#34;</pre>
+<pre class="line after"><span class="ws">        </span>)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749439728">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py"</cite>,
+      line <em class="line">38</em>,
+      in <code class="function">validate_type</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>return</pre>
+<pre class="line before"><span class="ws">        </span>if isinstance(value, (dict, list)):</pre>
+<pre class="line before"><span class="ws">            </span>for item in value.values() if isinstance(value, dict) else value:</pre>
+<pre class="line before"><span class="ws">                </span>validate_type(item)</pre>
+<pre class="line before"><span class="ws">            </span>return</pre>
+<pre class="line current"><span class="ws">        </span>raise ValueError(
+<span class="ws">        </span>^</pre>
+<pre class="line after"><span class="ws">            </span>f&#34;Unsupported type {type(value).__name__} in inputs. &#34;</pre>
+<pre class="line after"><span class="ws">            </span>&#34;Only str, int, float, bool, dict, and list are allowed.&#34;</pre>
+<pre class="line after"><span class="ws">        </span>)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span># Validate all input values</pre></div>
+</div>
+
+<li><div class="exc-divider">The above exception was the direct cause of the following exception:</div>
+<li><div class="frame" id="frame-2261749439008">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\task.py"</cite>,
+      line <em class="line">581</em>,
+      in <code class="function">interpolate_inputs_and_add_conversation_history</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>if not inputs:</pre>
+<pre class="line before"><span class="ws">            </span>return</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>try:</pre>
+<pre class="line current"><span class="ws">            </span>self.description = interpolate_only(
+<span class="ws">            </span>                   </pre>
+<pre class="line after"><span class="ws">                </span>input_string=self._original_description, inputs=inputs</pre>
+<pre class="line after"><span class="ws">            </span>)</pre>
+<pre class="line after"><span class="ws">        </span>except KeyError as e:</pre>
+<pre class="line after"><span class="ws">            </span>raise ValueError(</pre>
+<pre class="line after"><span class="ws">                </span>f&#34;Missing required template variable &#39;{e.args[0]}&#39; in description&#34;</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749439152">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py"</cite>,
+      line <em class="line">48</em>,
+      in <code class="function">interpolate_only</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">    </span># Validate all input values</pre>
+<pre class="line before"><span class="ws">    </span>for key, value in inputs.items():</pre>
+<pre class="line before"><span class="ws">        </span>try:</pre>
+<pre class="line before"><span class="ws">            </span>validate_type(value)</pre>
+<pre class="line before"><span class="ws">        </span>except ValueError as e:</pre>
+<pre class="line current"><span class="ws">            </span>raise ValueError(f&#34;Invalid value for key &#39;{key}&#39;: {str(e)}&#34;) from e
+<span class="ws">            </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>if input_string is None or not input_string:</pre>
+<pre class="line after"><span class="ws">        </span>return &#34;&#34;</pre>
+<pre class="line after"><span class="ws">    </span>if &#34;{&#34; not in input_string and &#34;}&#34; not in input_string:</pre>
+<pre class="line after"><span class="ws">        </span>return input_string</pre></div>
+</div>
+
+<li><div class="exc-divider">The above exception was the direct cause of the following exception:</div>
+<li><div class="frame" id="frame-2261749437136">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py"</cite>,
+      line <em class="line">1536</em>,
+      in <code class="function">__call__</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">    </span>) -&gt; cabc.Iterable[bytes]:</pre>
+<pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;The WSGI server calls the Flask application object as the</pre>
+<pre class="line before"><span class="ws">        </span>WSGI application. This calls :meth:`wsgi_app`, which can be</pre>
+<pre class="line before"><span class="ws">        </span>wrapped to apply middleware.</pre>
+<pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;</pre>
+<pre class="line current"><span class="ws">        </span>return self.wsgi_app(environ, start_response)
+<span class="ws">        </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749437280">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py"</cite>,
+      line <em class="line">1514</em>,
+      in <code class="function">wsgi_app</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>try:</pre>
+<pre class="line before"><span class="ws">                </span>ctx.push()</pre>
+<pre class="line before"><span class="ws">                </span>response = self.full_dispatch_request()</pre>
+<pre class="line before"><span class="ws">            </span>except Exception as e:</pre>
+<pre class="line before"><span class="ws">                </span>error = e</pre>
+<pre class="line current"><span class="ws">                </span>response = self.handle_exception(e)
+<span class="ws">                </span>           ^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">            </span>except:  # noqa: B001</pre>
+<pre class="line after"><span class="ws">                </span>error = sys.exc_info()[1]</pre>
+<pre class="line after"><span class="ws">                </span>raise</pre>
+<pre class="line after"><span class="ws">            </span>return response(environ, start_response)</pre>
+<pre class="line after"><span class="ws">        </span>finally:</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749437424">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py"</cite>,
+      line <em class="line">1511</em>,
+      in <code class="function">wsgi_app</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">        </span>ctx = self.request_context(environ)</pre>
+<pre class="line before"><span class="ws">        </span>error: BaseException | None = None</pre>
+<pre class="line before"><span class="ws">        </span>try:</pre>
+<pre class="line before"><span class="ws">            </span>try:</pre>
+<pre class="line before"><span class="ws">                </span>ctx.push()</pre>
+<pre class="line current"><span class="ws">                </span>response = self.full_dispatch_request()
+<span class="ws">                </span>           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">            </span>except Exception as e:</pre>
+<pre class="line after"><span class="ws">                </span>error = e</pre>
+<pre class="line after"><span class="ws">                </span>response = self.handle_exception(e)</pre>
+<pre class="line after"><span class="ws">            </span>except:  # noqa: B001</pre>
+<pre class="line after"><span class="ws">                </span>error = sys.exc_info()[1]</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749437568">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py"</cite>,
+      line <em class="line">919</em>,
+      in <code class="function">full_dispatch_request</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>request_started.send(self, _async_wrapper=self.ensure_sync)</pre>
+<pre class="line before"><span class="ws">            </span>rv = self.preprocess_request()</pre>
+<pre class="line before"><span class="ws">            </span>if rv is None:</pre>
+<pre class="line before"><span class="ws">                </span>rv = self.dispatch_request()</pre>
+<pre class="line before"><span class="ws">        </span>except Exception as e:</pre>
+<pre class="line current"><span class="ws">            </span>rv = self.handle_user_exception(e)
+<span class="ws">            </span>     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">        </span>return self.finalize_request(rv)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>def finalize_request(</pre>
+<pre class="line after"><span class="ws">        </span>self,</pre>
+<pre class="line after"><span class="ws">        </span>rv: ft.ResponseReturnValue | HTTPException,</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749437712">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py"</cite>,
+      line <em class="line">917</em>,
+      in <code class="function">full_dispatch_request</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">        </span>try:</pre>
+<pre class="line before"><span class="ws">            </span>request_started.send(self, _async_wrapper=self.ensure_sync)</pre>
+<pre class="line before"><span class="ws">            </span>rv = self.preprocess_request()</pre>
+<pre class="line before"><span class="ws">            </span>if rv is None:</pre>
+<pre class="line current"><span class="ws">                </span>rv = self.dispatch_request()
+<span class="ws">                </span>     ^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">        </span>except Exception as e:</pre>
+<pre class="line after"><span class="ws">            </span>rv = self.handle_user_exception(e)</pre>
+<pre class="line after"><span class="ws">        </span>return self.finalize_request(rv)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>def finalize_request(</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749437856">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py"</cite>,
+      line <em class="line">902</em>,
+      in <code class="function">dispatch_request</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>and req.method == &#34;OPTIONS&#34;</pre>
+<pre class="line before"><span class="ws">        </span>):</pre>
+<pre class="line before"><span class="ws">            </span>return self.make_default_options_response()</pre>
+<pre class="line before"><span class="ws">        </span># otherwise dispatch to the handler for that endpoint</pre>
+<pre class="line before"><span class="ws">        </span>view_args: dict[str, t.Any] = req.view_args  # type: ignore[assignment]</pre>
+<pre class="line current"><span class="ws">        </span>return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+<span class="ws">        </span>       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>def full_dispatch_request(self) -&gt; Response:</pre>
+<pre class="line after"><span class="ws">        </span>&#34;&#34;&#34;Dispatches the request and on top of that performs request</pre>
+<pre class="line after"><span class="ws">        </span>pre and postprocessing as well as HTTP exception catching and</pre>
+<pre class="line after"><span class="ws">        </span>error handling.</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749438000">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\src\analista_licitacoes\main.py"</cite>,
+      line <em class="line">64</em>,
+      in <code class="function">analisar</code></h4>
+  <div class="source "><pre class="line before"><span class="ws">        </span>inputs = {&#39;arquivos_upload&#39;: arquivos_upload}</pre>
+<pre class="line before"><span class="ws">    </span>else:</pre>
+<pre class="line before"><span class="ws">        </span>inputs = {}</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span># Exeecuta a crew</pre>
+<pre class="line current"><span class="ws">    </span>resultado = AnalistaLicitacoes().crew().kickoff(inputs=inputs)
+<span class="ws">    </span>            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">    </span>try:</pre>
+<pre class="line after"><span class="ws">        </span>output = resultado.final_output</pre>
+<pre class="line after"><span class="ws">    </span>except AttributeError:</pre>
+<pre class="line after"><span class="ws">        </span>output = str(resultado)</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749438144">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\agentops\instrumentation\crewai\instrumentation.py"</cite>,
+      line <em class="line">132</em>,
+      in <code class="function">wrapper</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws"></span>def with_tracer_wrapper(func):</pre>
+<pre class="line before"><span class="ws">    </span>&#34;&#34;&#34;Helper for providing tracer for wrapper functions.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span>def _with_tracer(tracer, duration_histogram, token_histogram, environment, application_name):</pre>
+<pre class="line before"><span class="ws">        </span>def wrapper(wrapped, instance, args, kwargs):</pre>
+<pre class="line current"><span class="ws">            </span>return func(
+<span class="ws">            </span>       </pre>
+<pre class="line after"><span class="ws">                </span>tracer,</pre>
+<pre class="line after"><span class="ws">                </span>duration_histogram,</pre>
+<pre class="line after"><span class="ws">                </span>token_histogram,</pre>
+<pre class="line after"><span class="ws">                </span>environment,</pre>
+<pre class="line after"><span class="ws">                </span>application_name,</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749438288">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\agentops\instrumentation\crewai\instrumentation.py"</cite>,
+      line <em class="line">198</em>,
+      in <code class="function">wrap_kickoff</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>if hasattr(instance, &#34;agents&#34;) and instance.agents:</pre>
+<pre class="line before"><span class="ws">                </span>logger.debug(f&#34;CrewAI: Explicitly processing {len(instance.agents)} agents before task execution&#34;)</pre>
+<pre class="line before"><span class="ws">                </span>crew_attrs._parse_agents(instance.agents)</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">            </span>logger.debug(&#34;CrewAI: Executing wrapped crew kickoff function&#34;)</pre>
+<pre class="line current"><span class="ws">            </span>result = wrapped(*args, **kwargs)
+<span class="ws">            </span>         ^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">            </span>if result:</pre>
+<pre class="line after"><span class="ws">                </span>class_name = instance.__class__.__name__</pre>
+<pre class="line after"><span class="ws">                </span>span.set_attribute(f&#34;crewai.{class_name.lower()}.result&#34;, str(result))</pre>
+<pre class="line after"><span class="ws">                </span>span.set_status(Status(StatusCode.OK))</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749438432">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py"</cite>,
+      line <em class="line">636</em>,
+      in <code class="function">kickoff</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>self._task_output_handler.reset()</pre>
+<pre class="line before"><span class="ws">            </span>self._logging_color = &#34;bold_purple&#34;</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">            </span>if inputs is not None:</pre>
+<pre class="line before"><span class="ws">                </span>self._inputs = inputs</pre>
+<pre class="line current"><span class="ws">                </span>self._interpolate_inputs(inputs)
+<span class="ws">                </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws">            </span>self._set_tasks_callbacks()</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">            </span>i18n = I18N(prompt_file=self.prompt_file)</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">            </span>for agent in self.agents:</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749438576">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py"</cite>,
+      line <em class="line">1276</em>,
+      in <code class="function">_interpolate_inputs</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">            </span>if not task.callback:</pre>
+<pre class="line before"><span class="ws">                </span>task.callback = self.task_callback</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span>def _interpolate_inputs(self, inputs: Dict[str, Any]) -&gt; None:</pre>
+<pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;Interpolates the inputs in the tasks and agents.&#34;&#34;&#34;</pre>
+<pre class="line current"><span class="ws">        </span>[
+<span class="ws">        </span>^</pre>
+<pre class="line after"><span class="ws">            </span>task.interpolate_inputs_and_add_conversation_history(</pre>
+<pre class="line after"><span class="ws">                </span># type: ignore # &#34;interpolate_inputs&#34; of &#34;Task&#34; does not return a value (it only ever returns None)</pre>
+<pre class="line after"><span class="ws">                </span>inputs</pre>
+<pre class="line after"><span class="ws">            </span>)</pre>
+<pre class="line after"><span class="ws">            </span>for task in self.tasks</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749438720">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py"</cite>,
+      line <em class="line">1277</em>,
+      in <code class="function">&lt;listcomp&gt;</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">                </span>task.callback = self.task_callback</pre>
+<pre class="line before"><span class="ws"></span> </pre>
+<pre class="line before"><span class="ws">    </span>def _interpolate_inputs(self, inputs: Dict[str, Any]) -&gt; None:</pre>
+<pre class="line before"><span class="ws">        </span>&#34;&#34;&#34;Interpolates the inputs in the tasks and agents.&#34;&#34;&#34;</pre>
+<pre class="line before"><span class="ws">        </span>[</pre>
+<pre class="line current"><span class="ws">            </span>task.interpolate_inputs_and_add_conversation_history(
+<span class="ws">            </span>^</pre>
+<pre class="line after"><span class="ws">                </span># type: ignore # &#34;interpolate_inputs&#34; of &#34;Task&#34; does not return a value (it only ever returns None)</pre>
+<pre class="line after"><span class="ws">                </span>inputs</pre>
+<pre class="line after"><span class="ws">            </span>)</pre>
+<pre class="line after"><span class="ws">            </span>for task in self.tasks</pre>
+<pre class="line after"><span class="ws">        </span>]</pre></div>
+</div>
+
+<li><div class="frame" id="frame-2261749438864">
+  <h4>File <cite class="filename">"C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\task.py"</cite>,
+      line <em class="line">589</em>,
+      in <code class="function">interpolate_inputs_and_add_conversation_history</code></h4>
+  <div class="source library"><pre class="line before"><span class="ws">        </span>except KeyError as e:</pre>
+<pre class="line before"><span class="ws">            </span>raise ValueError(</pre>
+<pre class="line before"><span class="ws">                </span>f&#34;Missing required template variable &#39;{e.args[0]}&#39; in description&#34;</pre>
+<pre class="line before"><span class="ws">            </span>) from e</pre>
+<pre class="line before"><span class="ws">        </span>except ValueError as e:</pre>
+<pre class="line current"><span class="ws">            </span>raise ValueError(f&#34;Error interpolating description: {str(e)}&#34;) from e
+<span class="ws">            </span>^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</pre>
+<pre class="line after"><span class="ws"></span> </pre>
+<pre class="line after"><span class="ws">        </span>try:</pre>
+<pre class="line after"><span class="ws">            </span>self.expected_output = interpolate_only(</pre>
+<pre class="line after"><span class="ws">                </span>input_string=self._original_expected_output, inputs=inputs</pre>
+<pre class="line after"><span class="ws">            </span>)</pre></div>
+</div>
+</ul>
+  <blockquote>ValueError: Error interpolating description: Invalid value for key &#39;arquivos_upload&#39;: Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+</blockquote>
+</div>
+
+<div class="plain">
+    <p>
+      This is the Copy/Paste friendly version of the traceback.
+    </p>
+    <textarea cols="50" rows="10" name="code" readonly>Traceback (most recent call last):
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py&#34;, line 46, in interpolate_only
+    validate_type(value)
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py&#34;, line 36, in validate_type
+    validate_type(item)
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py&#34;, line 36, in validate_type
+    validate_type(item)
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py&#34;, line 38, in validate_type
+    raise ValueError(
+ValueError: Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\task.py&#34;, line 581, in interpolate_inputs_and_add_conversation_history
+    self.description = interpolate_only(
+                       ^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py&#34;, line 48, in interpolate_only
+    raise ValueError(f&#34;Invalid value for key &#39;{key}&#39;: {str(e)}&#34;) from e
+ValueError: Invalid value for key &#39;arquivos_upload&#39;: Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py&#34;, line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py&#34;, line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py&#34;, line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py&#34;, line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py&#34;, line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py&#34;, line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\src\analista_licitacoes\main.py&#34;, line 64, in analisar
+    resultado = AnalistaLicitacoes().crew().kickoff(inputs=inputs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\agentops\instrumentation\crewai\instrumentation.py&#34;, line 132, in wrapper
+    return func(
+           ^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\agentops\instrumentation\crewai\instrumentation.py&#34;, line 198, in wrap_kickoff
+    result = wrapped(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py&#34;, line 636, in kickoff
+    self._interpolate_inputs(inputs)
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py&#34;, line 1276, in _interpolate_inputs
+    [
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py&#34;, line 1277, in &lt;listcomp&gt;
+    task.interpolate_inputs_and_add_conversation_history(
+  File &#34;C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\task.py&#34;, line 589, in interpolate_inputs_and_add_conversation_history
+    raise ValueError(f&#34;Error interpolating description: {str(e)}&#34;) from e
+ValueError: Error interpolating description: Invalid value for key &#39;arquivos_upload&#39;: Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+</textarea>
+</div>
+<div class="explanation">
+  The debugger caught an exception in your WSGI application.  You can now
+  look at the traceback which led to the error.  <span class="nojavascript">
+  If you enable JavaScript you can also use additional features such as code
+  execution (if the evalex feature is enabled), automatic pasting of the
+  exceptions and much more.</span>
+</div>
+      <div class="footer">
+        Brought to you by <strong class="arthur">DON'T PANIC</strong>, your
+        friendly Werkzeug powered traceback interpreter.
+      </div>
+    </div>
+
+    <div class="pin-prompt">
+      <div class="inner">
+        <h3>Console Locked</h3>
+        <p>
+          The console is locked and needs to be unlocked by entering the PIN.
+          You can find the PIN printed out on the standard output of your
+          shell that runs the server.
+        <form>
+          <p>PIN:
+            <input type=text name=pin size=14>
+            <input type=submit name=btn value="Confirm Pin">
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+
+<!--
+
+Traceback (most recent call last):
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py", line 46, in interpolate_only
+    validate_type(value)
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py", line 36, in validate_type
+    validate_type(item)
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py", line 36, in validate_type
+    validate_type(item)
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py", line 38, in validate_type
+    raise ValueError(
+ValueError: Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\task.py", line 581, in interpolate_inputs_and_add_conversation_history
+    self.description = interpolate_only(
+                       ^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\utilities\string_utils.py", line 48, in interpolate_only
+    raise ValueError(f"Invalid value for key '{key}': {str(e)}") from e
+ValueError: Invalid value for key 'arquivos_upload': Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\src\analista_licitacoes\main.py", line 64, in analisar
+    resultado = AnalistaLicitacoes().crew().kickoff(inputs=inputs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\agentops\instrumentation\crewai\instrumentation.py", line 132, in wrapper
+    return func(
+           ^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\agentops\instrumentation\crewai\instrumentation.py", line 198, in wrap_kickoff
+    result = wrapped(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py", line 636, in kickoff
+    self._interpolate_inputs(inputs)
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py", line 1276, in _interpolate_inputs
+    [
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\crew.py", line 1277, in <listcomp>
+    task.interpolate_inputs_and_add_conversation_history(
+  File "C:\pythonprojects\analista_licitacoes\.venv\Lib\site-packages\crewai\task.py", line 589, in interpolate_inputs_and_add_conversation_history
+    raise ValueError(f"Error interpolating description: {str(e)}") from e
+ValueError: Error interpolating description: Invalid value for key 'arquivos_upload': Unsupported type SpooledTemporaryFile in inputs. Only str, int, float, bool, dict, and list are allowed.
+
+
+-->

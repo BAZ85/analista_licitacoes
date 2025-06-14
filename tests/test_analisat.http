@@ -1,0 +1,16 @@
+### 1) Envio de edital para análise
+POST http://127.0.0.1:8000/analisar
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+----WebKitFormBoundary
+Content-Disposition: form-data; name="documentos"; filename="2. Estudo de Caso - Edital na Lei 14.133-2021.pdf"
+Content-Type: application/pdf
+
+< "./documentos/2. Estudo de Caso - Edital na Lei 14.133-2021.pdf"
+----WebKitFormBoundary--
+
+### 2) Baixar JSON
+GET http://127.0.0.1:8000/download/json
+
+### 3) Baixar XLSX
+GET http://127.0.0.1:8000/download/xlsx

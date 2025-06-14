@@ -5,9 +5,6 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from src.analista_licitacoes.tools.leitor_documentos_tool import carregar_documentos
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
-import agentops
-
-agentops.init()
 
 
 @CrewBase
@@ -99,7 +96,10 @@ class AnalistaLicitacoes():
     def carregar_documentos(self) -> Task:
         return Task(
             config=self.tasks_config['carregar_documentos'], # type: ignore[index]
-            tools=[carregar_documentos]
+            tools=[carregar_documentos],
+            inputs_schema={
+                'arquivos_upload': {'type': 'array', 'itens': {'type': 'object'}}
+            }
         )
 
     @task
