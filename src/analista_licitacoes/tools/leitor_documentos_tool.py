@@ -34,13 +34,13 @@ def carregar_documentos(arquivos_upload: list = None) -> list:
             tmp.write(stream.read())
             tmp.close()
             itens.append((filename, tmp.name))
-        else:
-            # Modo teste: lê do diretório DOCUMENTS_DIR
-            for nome_arquivo in os.listdir(DOCUMENTOS_DIR):
-                caminho = os.path.join(DOCUMENTOS_DIR, nome_arquivo)
-                # Verifica se é um arquivo regular (evita pastas e lixos)
-                if not os.path.isfile(caminho):
-                    itens.append((nome_arquivo, caminho))
+    else:
+        # Modo teste: lê do diretório DOCUMENTS_DIR
+        for nome_arquivo in os.listdir(DOCUMENTOS_DIR):
+            caminho = os.path.join(DOCUMENTOS_DIR, nome_arquivo)
+            # Verifica se é um arquivo regular (evita pastas e lixos)
+            if os.path.isfile(caminho):
+                itens.append((nome_arquivo, caminho))
         
         # Extrai texto de cada arquivo
         for nome_arquivo, caminho in itens:

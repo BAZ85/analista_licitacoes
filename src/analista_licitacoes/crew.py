@@ -98,7 +98,10 @@ class AnalistaLicitacoes():
             config=self.tasks_config['carregar_documentos'], # type: ignore[index]
             tools=[carregar_documentos],
             inputs_schema={
-                'arquivos_upload': {'type': 'array', 'itens': {'type': 'object'}}
+                'arquivos_upload': {
+                    'type': 'array',
+                    'itens': {'type': 'object'}
+                }
             }
         )
 
