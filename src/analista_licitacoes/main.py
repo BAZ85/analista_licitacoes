@@ -27,7 +27,7 @@ CORS(app)
 
 def send_and_delete(path: str, download_name: str):
     """
-    Envia o arquivo via HTTP e deleta após a resposta ser enviada.
+ """   Envia o arquivo via HTTP e deleta após a resposta ser enviada."""
     """
     if not os.path.isfile(path):
         abort(404)
@@ -48,8 +48,8 @@ def send_and_delete(path: str, download_name: str):
 @app.route('/analisar', methods=['POST'])
 def analisar():
     """
-    Recebe uploads de documentos, executa análise via CrewAI, gera JSON e Excel em OUTPUTDIR,
-    e retorna links de download.
+  """  Recebe uploads de documentos, executa análise via CrewAI, gera JSON e Excel em OUTPUTDIR,
+    e retorna links de download."""
     """
     # Cria uma subpasta única para cada execução
     session_id = datetime.now().strftime('%Y%m%d%H%M%S%f')
