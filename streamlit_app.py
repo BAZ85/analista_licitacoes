@@ -1,9 +1,10 @@
+import os
 import streamlit as st
 import requests
 from io import BytesIO
 
 # 🔗 Endereço do backend API
-API_URL = "http://backend:8000"  # Na máquina local, seria http://localhost:8000
+API_URL = os.getenv("API_URL", "http://localhost:8000")  # Na máquina local, seria http://localhost:8000
 
 st.set_page_config(page_title="Análise de Licitações", page_icon="📄")
 
@@ -28,7 +29,7 @@ if st.button("🚀 Executar Análise"):
         with st.spinner('🔍 Analisando... Isso pode levar alguns minutos...'):
             files = [('documentos', (file.name, file.read())) for file in uploaded_files]
             try:
-                response = requests.post(f"{API_URL}/analisar", files=files)
+                response = requests.post(f"{API_URL}/analisar", files=files, timeout=300)
                 if response.status_code == 200:
                     data = response.json()
                     st.success("✅ Análise concluída com sucesso!")
