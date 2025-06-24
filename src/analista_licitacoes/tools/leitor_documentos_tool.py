@@ -43,47 +43,47 @@ def carregar_documentos(arquivos_upload: list = None) -> list:
                 itens.append((nome_arquivo, caminho))
         
         # Extrai texto de cada arquivo
-        for nome_arquivo, caminho in itens:
-            nome_lower = nome_arquivo.lower()
-            texto_extraido = ""
-            
-            try:
-                if nome_lower.endswith(".pdf"):
-                    texto_extraido = extrair_texto_pdf(caminho)
-            
-                elif nome_lower.endswith(".docx"):
-                    doc = Document(caminho)
-                    texto_extraido = "\n".join(paragrafo.text for paragrafo in doc.paragraphs)
+    for nome_arquivo, caminho in itens:
+        nome_lower = nome_arquivo.lower()
+        texto_extraido = ""
+        
+        try:
+            if nome_lower.endswith(".pdf"):
+                texto_extraido = extrair_texto_pdf(caminho)
+        
+            elif nome_lower.endswith(".docx"):
+                doc = Document(caminho)
+                texto_extraido = "\n".join(paragrafo.text for paragrafo in doc.paragraphs)
 
-                elif nome_lower.endswith(".txt"):
-                    with open(caminho, "r", encoding="utf-8", errors="ignore") as f:
-                        texto_extraido = f.read()
+            elif nome_lower.endswith(".txt"):
+                with open(caminho, "r", encoding="utf-8", errors="ignore") as f:
+                    texto_extraido = f.read()
 
-                elif nome_lower.endswith(".rtf"):
-                    with open(caminho, "r", encoding="utf-8", errors="ignore") as f:
-                        conteudo_rtf = f.read()
-                    texto_extraido = rtf_to_text(conteudo_rtf)
+            elif nome_lower.endswith(".rtf"):
+                with open(caminho, "r", encoding="utf-8", errors="ignore") as f:
+                    conteudo_rtf = f.read()
+                texto_extraido = rtf_to_text(conteudo_rtf)
 
-                else:
-                    continue
-
-            except Exception as e:
-                print(f"Erro ao processar {nome_arquivo}: {e}")
+            else:
                 continue
 
-            documentos_extraidos.append({
-                "nome_arquivo": nome_arquivo,
-                "conteudo": texto_extraido
-            })
+        except Exception as e:
+            print(f"Erro ao processar {nome_arquivo}: {e}")
+            continue
 
-            # Remove temporário de upload
-            if arquivos_upload:
-                try:
-                    os.remove(caminho)
-                except:
-                    pass
+        documentos_extraidos.append({
+            "nome_arquivo": nome_arquivo,
+            "conteudo": texto_extraido
+        })
 
-        return documentos_extraidos
+        # Remove temporário de upload
+        if arquivos_upload:
+            try:
+                os.remove(caminho)
+            except:
+                pass
+
+    return documentos_extraidos
 
 
 def extrair_texto_pdf(caminho_pdf: str) -> str:

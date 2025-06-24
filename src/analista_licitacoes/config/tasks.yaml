@@ -52,8 +52,6 @@ extrair_metadados:
     }
   agent: extrator_metadata
   context: [classificar_documentos]
-  metadata:
-    prompt_file: prompts/prompt_01
 
 analisar_prompt_01:
   description: >

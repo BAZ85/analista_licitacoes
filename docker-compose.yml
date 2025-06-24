@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: licitacoes-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./documentos:/app/documentos
+      - ./output:/app/output
+    env_file:
+      - .env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: licitacoes-frontend
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    env_file:
+      - .env

@@ -1,5 +1,4 @@
-"""import os
-import sys
+import os
 import warnings
 import json
 import pandas as pd
@@ -27,7 +26,7 @@ CORS(app)
 
 def send_and_delete(path: str, download_name: str):
     """
- """   Envia o arquivo via HTTP e deleta após a resposta ser enviada."""
+    Envia o arquivo via HTTP e deleta após a resposta ser enviada.
     """
     if not os.path.isfile(path):
         abort(404)
@@ -48,8 +47,8 @@ def send_and_delete(path: str, download_name: str):
 @app.route('/analisar', methods=['POST'])
 def analisar():
     """
-  """  Recebe uploads de documentos, executa análise via CrewAI, gera JSON e Excel em OUTPUTDIR,
-    e retorna links de download."""
+    Recebe uploads de documentos, executa análise via CrewAI, gera JSON e Excel em OUTPUTDIR,
+    e retorna links de download.
     """
     # Cria uma subpasta única para cada execução
     session_id = datetime.now().strftime('%Y%m%d%H%M%S%f')
@@ -60,6 +59,10 @@ def analisar():
     # Recebe arquivos do usuário (pode ser lista vazia)
     try:
         uploads = request.files.getlist('documentos')
+
+        if not uploads:
+            return jsonify({'status': 'erro', 'mensagem': 'Nenhum arquivo foi enviado'}), 400
+        
         file_paths = []
         for f in uploads:
             filename = secure_filename(f.filename)
@@ -146,4 +149,4 @@ def download_xlsx(session_id):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000, debug=True)"""
+    app.run(host='0.0.0.0', port=8000, debug=True)
