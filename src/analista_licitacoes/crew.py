@@ -5,9 +5,9 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from src.analista_licitacoes.tools.leitor_documentos_tool import carregar_documentos
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
-import agentops
+#import agentops
 
-agentops.init()
+#agentops.init()
 
 
 @CrewBase
