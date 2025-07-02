@@ -1,4 +1,4 @@
-from crewai import Agent, Crew, Process, Task
+from crewai import Agent, Crew, Process, Task, LLM
 from crewai.tools import tool
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
@@ -9,6 +9,12 @@ from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 
 #agentops.init()
 
+llm_custom = LLM(
+    model="llama3.3",
+    api_key="any_value",
+    base_url="https://llm.tce.mt.gov.br/v1",
+    provider="openai"
+)
 
 @CrewBase
 class AnalistaLicitacoes():
@@ -22,14 +28,16 @@ class AnalistaLicitacoes():
     def analista_documentos(self) -> Agent:
         return Agent(
             config=self.agents_config['analista_documentos'], # type: ignore[index]
-            verbose=True
+            verbose=True, 
+            llm=llm_custom           
         )
 
     @agent
     def extrator_metadata(self) -> Agent:
         return Agent(
             config=self.agents_config['extrator_metadata'], # type: ignore[index]
-            verbose=True
+            verbose=True,
+            llm=llm_custom
         )
     
     @agent
@@ -185,4 +193,5 @@ class AnalistaLicitacoes():
             tasks=self.tasks, 
             process=Process.sequential,
             verbose=True,  
+            llm=llm_custom
         )
