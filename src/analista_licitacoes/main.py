@@ -11,6 +11,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+os.environ.setdefault("LITELLM_MODEL", "llama3.3")
+os.environ.setdefault("OLLAMA_API_BASE", "https://llm.tce.mt.gov.br")
+os.environ.setdefault("OLLAMA_API_KEY", "any_key")
+
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
 OUTPUTDIR = os.path.join(os.path.dirname(__file__), "output")
