@@ -2,6 +2,7 @@ from crewai import Agent, Crew, Process, Task, LLM
 from crewai.tools import tool
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
+from langchain_openai import ChatOpenAI
 from typing import List
 from src.analista_licitacoes.tools.leitor_documentos_tool import carregar_documentos
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
@@ -9,10 +10,10 @@ from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 
 #agentops.init()
 
-llm_custom = LLM(
+llm_custom = ChatOpenAI(
     model="llama3.3",
     api_key="any_value",
-    base_url="https://llm.tce.mt.gov.br/v1",
+    base_url="https://llm.tce.mt.gov.br/",
     provider="openai"
 )
 

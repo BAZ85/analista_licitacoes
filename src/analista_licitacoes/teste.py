@@ -1,11 +1,11 @@
-from litellm import completion
+from langchain_openai import ChatOpenAI
 
-response = completion(
+response = ChatOpenAI(
     model="llama3.3",
     messages=[{"role": "user", "content": "Olá, quem é você?"}],
-    api_base="https://llm.tce.mt.gov.br/v1",
+    base_url="https://llm.tce.mt.gov.br/",
     api_key="any_value",
-    custom_llm_provider="openai"
+    
 )
 
 print(response['choices'][0]['message']['content'])
