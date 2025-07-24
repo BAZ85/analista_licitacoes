@@ -3,7 +3,7 @@ from crewai.tools import tool
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
-from src.analista_licitacoes.tools.leitor_documentos_tool import carregar_documentos
+from src.analista_licitacoes.tools.leitor_documentos_tool import carregar_arquivos
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 
 
@@ -96,10 +96,10 @@ class AnalistaLicitacoes():
     def carregar_documentos(self) -> Task:
         return Task(
             config=self.tasks_config['carregar_documentos'], # type: ignore[index]
-            tools=[carregar_documentos],
+            tools=[carregar_arquivos],
             inputs_schema={
                 'arquivos_upload': {
-                    'type': 'list',
+                    'type': 'array',
                     'items': {'type': 'object'}
                 }
             }
@@ -108,7 +108,8 @@ class AnalistaLicitacoes():
     @task
     def classificar_documentos(self) -> Task:
         return Task(
-            config=self.tasks_config['classificar_documentos'], # type: ignore[index]         
+            config=self.tasks_config['classificar_documentos'], # type: ignore[index]
+            tools=[carregar_arquivos]        
         )
     
     @task
@@ -176,7 +177,7 @@ class AnalistaLicitacoes():
         """
         Ferramenta para leitura de documentos em diversos formatos
         """
-        return carregar_documentos
+        return carregar_arquivos
 
     @crew
     def crew(self) -> Crew:
@@ -186,5 +187,6 @@ class AnalistaLicitacoes():
             agents=self.agents, 
             tasks=self.tasks, 
             process=Process.sequential,
-            verbose=True,  
+            verbose=True,
+            input_task=self.carregar_documentos(),
         )

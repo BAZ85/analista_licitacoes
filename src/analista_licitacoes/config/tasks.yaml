@@ -1,6 +1,6 @@
 carregar_documentos:
   description: >
-    Carregar o conteúdo textual de todos os documentos da licitação localizados na pasta 'documentos/'.
+    Carregar o conteúdo textual de todos os documentos da licitação carregados pelo usuário ou localizados na pasta 'documentos/'.
     Aplicar OCR em PDFs não pesquisáveis. O texto bruto de cada arquivo deve ser extraído, sem realizar classificação de tipo 
     ainda.
   expected_output: >
