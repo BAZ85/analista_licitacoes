@@ -65,7 +65,7 @@ class AnalistaLicitacoes():
     def carregar_documentos(self) -> Task:
         return Task(
             config=self.tasks_config['carregar_documentos'],
-            tools=[lambda pasta: carregar_arquivos(pasta=pasta)],
+            tools=[carregar_arquivos],
             input_schema={'pasta': {'type': 'string'}}
         )
 
