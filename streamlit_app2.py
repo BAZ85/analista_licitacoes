@@ -1,123 +1,101 @@
+import streamlit as st
 import os
+import tempfile
 import json
 import pandas as pd
-import streamlit as st
-from datetime import datetime
-from io import BytesIO
-from src.analista_licitacoes.crew import AnalistaLicitacoes
-from src.analista_licitacoes.utils.output_writer import salvar_resultado_json
+from src.analista_licitacoes.main import run  # função run agora recebe o caminho como argumento
 
-st.set_page_config(page_title="Análise de Licitações", page_icon="📄", layout="centered")
+st.set_page_config(page_title="Análise de Licitações", page_icon="📄", layout="wide")
 st.title("📄 Análise de Licitações com IA")
 
-st.markdown("""
-Faça o upload dos documentos da licitação (PDF, DOCX, TXT ou RTF) e clique em **Executar Análise**.
+# Inicializa o estado da sessão
+if "analise_executada" not in st.session_state:
+    st.session_state.analise_executada = False
 
-O sistema irá processar os documentos, realizar as análises e gerar um relatório em JSON e Excel.
-""")
+if "caminho_temp" not in st.session_state:
+    st.session_state.caminho_temp = None
 
-uploaded_files = st.file_uploader(
-    "📤 Envie seus documentos",
-    type=["pdf", "docx", "txt", "rtf"],
-    accept_multiple_files=True
-)
+if "exibir_resultado" not in st.session_state:
+    st.session_state.exibir_resultado = False
 
-if st.button("🚀 Executar Análise"):
-    if not uploaded_files:
-        st.warning("Por favor, envie pelo menos um documento.")
-    else:
-        with st.spinner('🔍 Analisando... Isso pode levar alguns minutos...'):
+if "excel_bytes" not in st.session_state:
+    st.session_state.excel_bytes = None
 
-            # Cria uma pasta temporária para salvar os arquivos
-            session_id = datetime.now().strftime('%Y%m%d%H%M%S%f')
-            temp_dir = os.path.join("output", session_id)
-            os.makedirs(temp_dir, exist_ok=True)
+# Etapa 1: Upload dos arquivos
+if not st.session_state.exibir_resultado:
+    st.markdown("""
+    Faça o upload dos documentos da licitação **(Edital, Termo de Referência e Estudo Técnico Preliminar)** nos formatos PDF, DOCX, TXT ou RTF e clique em **Executar Análise**.
+    """)
 
-            
-            file_paths = []
-            for uploaded_file in uploaded_files:
-                filename = uploaded_file.name
-                out_path = os.path.join(temp_dir, filename)
-                with open(out_path, "wb") as f:
-                    f.write(uploaded_file.read())
-                file_paths.append(os.path.abspath(out_path))
+    uploaded_files = st.file_uploader(
+        "📤 Carregue os documentos da licitação (.pdf, .docx, .txt, .rtf)",
+        type=["pdf", "docx", "txt", "rtf"],
+        accept_multiple_files=True
+    )
 
-            inputs = {'arquivos_upload': file_paths}
+    if uploaded_files and st.button("▶️ Executar Análise"):
+        with st.spinner("🔍 Analisando documentos... Isso pode levar alguns minutos..."):
+            with tempfile.TemporaryDirectory() as tmpdir:
+                for file in uploaded_files:
+                    file_path = os.path.join(tmpdir, file.name)
+                    with open(file_path, "wb") as f:
+                        f.write(file.getvalue())
 
-            st.info('Executando a análise... Isso pode levar alguns minutos.')
+                try:
+                    run(caminho_temporario=tmpdir)
+                except Exception as e:
+                    st.error(f"Erro ao executar a análise: {e}")
+                    st.stop()
 
-            try:
-                resultado = AnalistaLicitacoes().crew().kickoff(inputs=inputs)
-                output = getattr(resultado, 'final_output', str(resultado))
+                # Lê os resultados após execução
+                resultado_path = os.path.join("src", "analista_licitacoes", "output", "resultado_analise.json")
+                excel_path = os.path.join("src", "analista_licitacoes", "output", "resultado_analise.xlsx")
 
-                json_path = os.path.join(temp_dir, "resultado_analise.json")
-                salvar_resultado_json(output, json_path)
+                if os.path.exists(resultado_path) and os.path.exists(excel_path):
+                    with open(resultado_path, "r", encoding="utf-8") as f:
+                        resultado = json.load(f)
+                    with open(excel_path, "rb") as ef:
+                        st.session_state.excel_bytes = ef.read()
 
-                with open(json_path, 'r', encoding='utf-8') as f:
-                    outer = json.load(f)
-                inner = json.loads(outer['resultado'])
+                    st.session_state.exibir_resultado = True
+                else:
+                    st.error("Resultado não encontrado. Verifique se a análise foi concluída.")
+                    st.stop()
 
-                md = inner['edital']
-                df = pd.DataFrame(inner['analises'])
-                df = df.rename(columns={
-                    'numero_prompt': 'Número do prompt',
-                    'pergunta': 'Texto da pergunta',
-                    'saida': 'Resposta',
-                    'justificativa': 'Justificativa',
-                    'codigo_irregularidade': 'Código da irregularidade',
-                    'fundamento_legal': 'Fundamentação legal'
-                })
+# Etapa 2: Exibir resultados
+if st.session_state.exibir_resultado:
+    resultado_path = os.path.join("src", "analista_licitacoes", "output", "resultado_analise.json")
+    try:
+        with open(resultado_path, "r", encoding="utf-8") as f:
+            resultado = json.load(f)
+        inner = json.loads(resultado["resultado"])
 
-                # Cria planilha Excel em memória
-                excel_buffer = BytesIO()
-                with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
-                    workbook = writer.book
-                    ws = workbook.add_worksheet('Análise')
-                    writer.sheets['Análise'] = ws
+        st.subheader(":bookmark_tabs: Metadados Extraídos")
+        st.markdown(f"**Ente Licitante:** {inner['edital'].get('ente_licitante', '-')}")
+        st.markdown(f"**Número/Ano:** {inner['edital'].get('numero_ano_licitacao', '-')}")
+        st.markdown(f"**Modalidade:** {inner['edital'].get('modalidade_licitacao', '-')}")
+        st.markdown(f"**Objeto:** {inner['edital'].get('objeto_licitacao', '-')}")
 
-                    wrap_fmt = workbook.add_format({'text_wrap': True})
-                    header_fmt = workbook.add_format({'bold': True, 'text_wrap': True})
+        st.subheader(":mag: Resultado da Análise")
+        df = pd.DataFrame(inner["analises"])
+        st.dataframe(df, use_container_width=True)
 
-                    ws.write('A1', 'Ente licitante', header_fmt); ws.write('B1', md.get('ente_licitante', wrap_fmt))
-                    ws.write('A2', 'Número/Ano da licitação', header_fmt); ws.write('B2', md.get('numero_ano_licitacao', wrap_fmt))
-                    ws.write('A3', 'Modalidade da licitação', header_fmt); ws.write('B3', md.get('modalidade_licitacao', wrap_fmt))
-                    ws.write('A4', 'Objeto da licitação', header_fmt); ws.write('B4', md.get('objeto_licitacao', wrap_fmt))
+        if st.session_state.excel_bytes:
+            st.download_button(
+                label="🗃️ Baixar Resultado em Excel",
+                data=st.session_state.excel_bytes,
+                file_name="resultado_analise.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 
-                    for col_num, title in enumerate(df.columns):
-                        ws.write(6, col_num, title, header_fmt)
+        # Botão para reiniciar a análise
+        if st.button("🔄 Nova Análise"):
+            st.session_state.exibir_resultado = False
+            st.session_state.excel_bytes = None
+            st.rerun()
 
-                    for row_idx, row in enumerate(df.values, start=7):
-                        for col_idx, cell in enumerate(row):
-                            ws.write(row_idx, col_idx, cell, wrap_fmt)
-
-                    ws.set_column('A:A', 23, wrap_fmt)
-                    ws.set_column('B:B', 28, wrap_fmt)
-                    ws.set_column('C:C', 14, wrap_fmt)
-                    ws.set_column('D:D', 51, wrap_fmt)
-                    ws.set_column('E:E', 34, wrap_fmt)
-                    ws.set_column('F:F', 34, wrap_fmt)
-
-                excel_buffer.seek(0)
-
-                st.success("✅ Análise concluída com sucesso!")
-                
-                # Botões de download
-                st.download_button(
-                    label="📥 Baixar JSON",
-                    data=json.dumps(outer, indent=2),
-                    file_name="resultado_analise.json",
-                    mime="application/json"
-                )
-                st.download_button(
-                    label="📥 Baixar Excel",
-                    data=excel_buffer,
-                    file_name="resultado_analise.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-
-            except Exception as e:
-                st.error(f"Ocorreu um erro durante a análise: {e}")
-
+    except Exception as e:
+        st.error(f"Erro ao carregar resultado JSON: {e}")
 
 st.markdown("---")
 st.caption("Autor do projeto: Bruno Alberto Zys, Auditor Público Externo do TCE/MT.")

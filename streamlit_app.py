@@ -6,7 +6,7 @@ import json
 import pandas as pd
 from src.analista_licitacoes.main import run  # função run agora recebe o caminho como argumento
 
-st.set_page_config(page_title="Análise de Licitações", page_icon="📄", layout="centered")
+st.set_page_config(page_title="Análise de Licitações", page_icon="📄", layout="wide")
 st.title("📄 Análise de Licitações com IA")
 
 st.markdown("""
