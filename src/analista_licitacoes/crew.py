@@ -1,10 +1,8 @@
 from crewai import Agent, Crew, Process, Task
-from crewai.tools import tool
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from src.analista_licitacoes.tools.leitor_documentos_tool import carregar_arquivos
-from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
 import agentops
 
 agentops.init()
@@ -17,178 +15,113 @@ class AnalistaLicitacoes():
     agents: List[BaseAgent]
     tasks: List[Task]
 
-
+    # === Agentes ===
     @agent
     def analista_documentos(self) -> Agent:
-        return Agent(
-            config=self.agents_config['analista_documentos'], # type: ignore[index]
-            verbose=True
-        )
+        return Agent(config=self.agents_config['analista_documentos'], verbose=True)
 
     @agent
     def extrator_metadata(self) -> Agent:
-        return Agent(
-            config=self.agents_config['extrator_metadata'], # type: ignore[index]
-            verbose=True
-        )
-    
+        return Agent(config=self.agents_config['extrator_metadata'], verbose=True)
+
     @agent
     def executor_prompt_01(self) -> Agent:
-        return Agent(
-            config=self.agents_config['executor_prompt_01'], # type: ignore[index]
-            verbose=True,
-        )
+        return Agent(config=self.agents_config['executor_prompt_01'], verbose=True)
 
     @agent
     def executor_prompt_02(self) -> Agent:
-        return Agent(
-            config=self.agents_config['executor_prompt_02'], # type: ignore[index]
-            verbose=True,
-        )
+        return Agent(config=self.agents_config['executor_prompt_02'], verbose=True)
 
     @agent
     def executor_prompt_03(self) -> Agent:
-        return Agent(
-            config=self.agents_config['executor_prompt_03'], # type: ignore[index]
-            verbose=True,
-        )
-    
+        return Agent(config=self.agents_config['executor_prompt_03'], verbose=True)
+
     @agent
     def executor_prompt_04(self) -> Agent:
-        return Agent(
-            config=self.agents_config['executor_prompt_04'], # type: ignore[index]
-            verbose=True,
-        )
-    
+        return Agent(config=self.agents_config['executor_prompt_04'], verbose=True)
+
     @agent
     def executor_prompt_05(self) -> Agent:
-        return Agent(
-            config=self.agents_config['executor_prompt_05'], # type: ignore[index]
-            verbose=True,
-        )
+        return Agent(config=self.agents_config['executor_prompt_05'], verbose=True)
 
     @agent
     def executor_prompt_06(self) -> Agent:
-        return Agent(
-            config=self.agents_config['executor_prompt_06'], # type: ignore[index]
-            verbose=True,
-        )
-    
+        return Agent(config=self.agents_config['executor_prompt_06'], verbose=True)
+
     @agent
     def executor_prompt_07(self) -> Agent:
-        return Agent(
-            config=self.agents_config['executor_prompt_07'], # type: ignore[index]
-            verbose=True,
-        )
+        return Agent(config=self.agents_config['executor_prompt_07'], verbose=True)
 
     @agent
     def validador(self) -> Agent:
-        return Agent(
-            config=self.agents_config['validador'], # type: ignore[index]
-            verbose=True,
-        )
+        return Agent(config=self.agents_config['validador'], verbose=True)
 
     @agent
     def consolidador_respostas(self) -> Agent:
-        return Agent(
-            config=self.agents_config['consolidador_respostas'], # type: ignore[index]
-            verbose=True,
-        )
+        return Agent(config=self.agents_config['consolidador_respostas'], verbose=True)
 
+    # === Tasks ===
     @task
     def carregar_documentos(self) -> Task:
         return Task(
-            config=self.tasks_config['carregar_documentos'], # type: ignore[index]
-            tools=[carregar_arquivos]
+            config=self.tasks_config['carregar_documentos'],
+            tools=[lambda pasta: carregar_arquivos(pasta=pasta)],
+            input_schema={'pasta': {'type': 'string'}}
         )
 
     @task
     def classificar_documentos(self) -> Task:
         return Task(
-            config=self.tasks_config['classificar_documentos'], # type: ignore[index]     
-            tools=[carregar_arquivos],
-            input_schema={
-                'arquivos_upload': {
-                    'type': 'array',
-                    'items': {'type': 'object'}
-                }
-            }       
+            config=self.tasks_config['classificar_documentos']
+            # Nenhuma ferramenta aqui: depende do output da task anterior
         )
-    
+
     @task
     def extrair_metadados(self) -> Task:
-        return Task(
-            config=self.tasks_config['extrair_metadados'], # type: ignore[index]            
-    )
+        return Task(config=self.tasks_config['extrair_metadados'])
 
     @task
     def analisar_prompt_01(self) -> Task:
-        return Task(
-            config=self.tasks_config['analisar_prompt_01'], # type: ignore[index]                       
-    )
+        return Task(config=self.tasks_config['analisar_prompt_01'])
 
     @task
     def analisar_prompt_02(self) -> Task:
-        return Task(
-            config=self.tasks_config['analisar_prompt_02'], # type: ignore[index]                       
-    )
+        return Task(config=self.tasks_config['analisar_prompt_02'])
 
     @task
     def analisar_prompt_03(self) -> Task:
-        return Task(
-            config=self.tasks_config['analisar_prompt_03'], # type: ignore[index]                      
-    )
+        return Task(config=self.tasks_config['analisar_prompt_03'])
 
     @task
     def analisar_prompt_04(self) -> Task:
-        return Task(
-            config=self.tasks_config['analisar_prompt_04'], # type: ignore[index]                      
-    )
+        return Task(config=self.tasks_config['analisar_prompt_04'])
 
     @task
     def analisar_prompt_05(self) -> Task:
-        return Task(
-            config=self.tasks_config['analisar_prompt_05'], # type: ignore[index]                      
-    )
+        return Task(config=self.tasks_config['analisar_prompt_05'])
 
     @task
     def analisar_prompt_06(self) -> Task:
-        return Task(
-            config=self.tasks_config['analisar_prompt_06'], # type: ignore[index]                      
-    )
+        return Task(config=self.tasks_config['analisar_prompt_06'])
 
     @task
     def analisar_prompt_07(self) -> Task:
-        return Task(
-            config=self.tasks_config['analisar_prompt_07'], # type: ignore[index]                      
-    )
-    
+        return Task(config=self.tasks_config['analisar_prompt_07'])
+
     @task
     def validar_estrutura_analise(self) -> Task:
-        return Task(
-            config=self.tasks_config['validar_estrutura_analise'], # type: ignore[index]                       
-    )
+        return Task(config=self.tasks_config['validar_estrutura_analise'])
 
     @task
     def consolidar_respostas(self) -> Task:
-        return Task(
-            config=self.tasks_config['consolidar_respostas'], # type: ignore[index]            
-    )
+        return Task(config=self.tasks_config['consolidar_respostas'])
 
-    @tool
-    def leitor_documentos_tool(self):
-        """
-        Ferramenta para leitura de documentos em diversos formatos
-        """
-        return carregar_documentos
-
+    # === Crew ===
     @crew
     def crew(self) -> Crew:
-        """Creates the AnalistaLicitacoes crew"""
-
         return Crew(
-            agents=self.agents, 
-            tasks=self.tasks, 
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
-            verbose=True,  
+            verbose=True,
         )
