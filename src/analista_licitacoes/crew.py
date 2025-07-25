@@ -5,6 +5,9 @@ from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
 from src.analista_licitacoes.tools.leitor_documentos_tool import carregar_arquivos
 from crewai.knowledge.source.pdf_knowledge_source import PDFKnowledgeSource
+import agentops
+
+agentops.init()
 
 
 @CrewBase
@@ -96,88 +99,88 @@ class AnalistaLicitacoes():
     def carregar_documentos(self) -> Task:
         return Task(
             config=self.tasks_config['carregar_documentos'], # type: ignore[index]
-            tools=[carregar_arquivos],
-            inputs_schema={
-                'arquivos_upload': {
-                    'type': 'array',
-                    'items': {'type': 'object'}
-                }
-            }
+            tools=[carregar_arquivos]
         )
 
     @task
     def classificar_documentos(self) -> Task:
         return Task(
-            config=self.tasks_config['classificar_documentos'], # type: ignore[index]
-            tools=[carregar_arquivos]        
+            config=self.tasks_config['classificar_documentos'], # type: ignore[index]     
+            tools=[carregar_arquivos],
+            input_schema={
+                'arquivos_upload': {
+                    'type': 'array',
+                    'items': {'type': 'object'}
+                }
+            }       
         )
     
     @task
     def extrair_metadados(self) -> Task:
         return Task(
             config=self.tasks_config['extrair_metadados'], # type: ignore[index]            
-        )   
+    )
 
     @task
     def analisar_prompt_01(self) -> Task:
         return Task(
             config=self.tasks_config['analisar_prompt_01'], # type: ignore[index]                       
-        )
+    )
 
     @task
     def analisar_prompt_02(self) -> Task:
         return Task(
             config=self.tasks_config['analisar_prompt_02'], # type: ignore[index]                       
-        )
+    )
 
     @task
     def analisar_prompt_03(self) -> Task:
         return Task(
             config=self.tasks_config['analisar_prompt_03'], # type: ignore[index]                      
-        )
+    )
 
     @task
     def analisar_prompt_04(self) -> Task:
         return Task(
             config=self.tasks_config['analisar_prompt_04'], # type: ignore[index]                      
-        )
+    )
 
     @task
     def analisar_prompt_05(self) -> Task:
         return Task(
             config=self.tasks_config['analisar_prompt_05'], # type: ignore[index]                      
-        )
+    )
 
     @task
     def analisar_prompt_06(self) -> Task:
         return Task(
             config=self.tasks_config['analisar_prompt_06'], # type: ignore[index]                      
-        )
+    )
 
     @task
     def analisar_prompt_07(self) -> Task:
         return Task(
             config=self.tasks_config['analisar_prompt_07'], # type: ignore[index]                      
-        )
+    )
     
     @task
     def validar_estrutura_analise(self) -> Task:
         return Task(
             config=self.tasks_config['validar_estrutura_analise'], # type: ignore[index]                       
-        )
+    )
 
     @task
     def consolidar_respostas(self) -> Task:
         return Task(
             config=self.tasks_config['consolidar_respostas'], # type: ignore[index]            
-        )
+    )
 
     @tool
     def leitor_documentos_tool(self):
         """
         Ferramenta para leitura de documentos em diversos formatos
         """
-        return carregar_arquivos
+        return carregar_documentos
 
     @crew
     def crew(self) -> Crew:
@@ -187,6 +190,5 @@ class AnalistaLicitacoes():
             agents=self.agents, 
             tasks=self.tasks, 
             process=Process.sequential,
-            verbose=True,
-            input_task=self.carregar_documentos(),
+            verbose=True,  
         )
