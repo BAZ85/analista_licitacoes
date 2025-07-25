@@ -465,7 +465,7 @@ analisar_prompt_06:
     1. Verificação das Cláusulas:
       - Procure por cláusulas que exijam que o licitante possua sede, filial, escritório, domicílio, qualquer estrutura física 
       similar no ente licitante ou na sua região de abrangência,
-      - Procure também por restrições indiretas, como a necessidade de credenciamento, autorização ou registro em órgãos municipais
+      - Procure também por restrições indiretas, como a necessidade de credenciamento, cadastro, autorização ou registro em órgãos municipais
       e/ou estaduais (por exemplo, Vigilância Sanitária) que, na prática, limitem a participação com base na localização do 
       licitante.
       - Identifique e tenha especial atenção às exigências que condicionem a participação na licitação ao registro, credenciamento 
@@ -480,8 +480,8 @@ analisar_prompt_06:
     2. Considerações Semânticas:
       - Na análise, fique atento para o uso de sinônimos ou palavras com mesmo conteúdo semântico.
       - Leve em conta sinônimos e termos correlatos, tais como: “sucursal”, “agência”, “ponto de atendimento”, “estrutura física 
-      obrigatória”, “capacidade operacional no município”, “credenciamento regional” ou “alvará de funcionamento emitido pelo 
-      ente licitante”.
+      obrigatória”, “capacidade operacional no município”, “credenciamento regional”, "credenciamento municipal" ou “alvará de funcionamento 
+      emitido pelo ente licitante”.
     3. Restrições Importantes:
       - Não crie fatos ou informações que não estejam presentes nos documentos analisados.
       - Mantenha a resposta clara, objetiva e baseada unicamente no conteúdo dos documentos fornecidos.
