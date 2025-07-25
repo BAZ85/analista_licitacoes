@@ -6,19 +6,25 @@ import json
 import pandas as pd
 from src.analista_licitacoes.main import run  # função run agora recebe o caminho como argumento
 
-st.set_page_config(page_title="Análise de Licitações com IA", layout="wide")
-st.title("📊 Análise de Licitações com IA - Upload de Documentos")
+st.set_page_config(page_title="Análise de Licitações", page_icon="📄", layout="centered")
+st.title("📄 Análise de Licitações com IA")
+
+st.markdown("""
+Faça o upload dos documentos da licitação **(Edital, Termo de Referência e Estudo Técnico Preliminar)** nos formatos PDF, DOCX, TXT ou RTF e clique em **Executar Análise**.
+
+O sistema irá processar os documentos, realizar as análises e gerar um relatório em JSON e Excel.
+""")
 
 # Etapa 1: Upload dos arquivos
 uploaded_files = st.file_uploader(
-    "Carregue os documentos da licitação (.pdf, .docx, .txt, .rtf)",
+    "📤 Carregue os documentos da licitação (.pdf, .docx, .txt, .rtf)",
     type=["pdf", "docx", "txt", "rtf"],
     accept_multiple_files=True
 )
 
 # Etapa 2: Botão para executar a análise
-if uploaded_files and st.button("🔄 Executar Análise"):
-    with st.spinner("Analisando documentos. Isso pode levar alguns minutos..."):
+if uploaded_files and st.button("▶️ Executar Análise"):
+    with st.spinner("🔍 Analisando documentos... Isso pode levar alguns minutos..."):
 
         # Cria pasta temporária e salva os arquivos
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -66,3 +72,7 @@ if uploaded_files and st.button("🔄 Executar Análise"):
                     st.error(f"Erro ao carregar resultado JSON: {e}")
             else:
                 st.error("Arquivo de resultado não encontrado.")
+
+st.markdown("---")
+st.caption("Autor do projeto: Bruno Alberto Zys, Auditor Público Externo do TCE/MT.")
+st.caption("Este é um projeto em fase de testes. Qualquer erro, entre em contato com o autor.")
