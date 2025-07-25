@@ -119,9 +119,14 @@ class AnalistaLicitacoes():
     # === Crew ===
     @crew
     def crew(self) -> Crew:
-        return Crew(
+        c = Crew(
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
+            input_keys=["pasta"],
             verbose=True,
         )
+        print("[DEBUG] Ordem das tasks na crew:")
+        for i, t in enumerate(c.tasks, start=1):
+            print(f"{i}. {t.name}")
+        return c

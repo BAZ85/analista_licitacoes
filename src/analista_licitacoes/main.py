@@ -22,6 +22,7 @@ def run(caminho_temporario: str):
     """
     Executa a crew com os documentos localizados em caminho_temporario.
     """
+    print(f"[DEBUG] Caminho temporário recebido: {caminho_temporario}")
     try:
         resultado = AnalistaLicitacoes().crew().kickoff(inputs={"pasta": caminho_temporario})
 

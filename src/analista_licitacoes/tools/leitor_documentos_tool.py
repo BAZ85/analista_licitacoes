@@ -8,7 +8,7 @@ from PyPDF2 import PdfReader
 
 
 @tool("Leitura bruta de documentos da licitação")
-def carregar_arquivos(pasta: str = "documentos") -> list:
+def carregar_arquivos(pasta: str) -> list:
     """
     Extrai o conteúdo textual de todos os documentos na pasta informada.
     Aplica OCR em PDFs se necessário.
@@ -17,6 +17,7 @@ def carregar_arquivos(pasta: str = "documentos") -> list:
     Parâmetros:
     - pasta: Caminho para a pasta onde estão os arquivos a serem analisados.
     """
+    print(f"[DEBUG] Pasta recebida na tool: {pasta}")
     documentos_extraidos = []
 
     pasta_absoluta = os.path.abspath(pasta)
