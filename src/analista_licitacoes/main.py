@@ -4,9 +4,10 @@ import shutil
 import warnings
 import json
 import pandas as pd
+from crewai import CrewOutput
 from datetime import datetime
 from src.analista_licitacoes.crew import AnalistaLicitacoes
-from src.analista_licitacoes.utils.output_writer import salvar_resultado_json
+from src.analista_licitacoes.utils.output_writer import salvar_resultado_json, carregar_resultado_json
 
 from dotenv import load_dotenv
 
@@ -26,22 +27,51 @@ def run(caminho_temporario: str):
     try:
         resultado = AnalistaLicitacoes().crew().kickoff(inputs={"pasta": caminho_temporario})
 
-        try:
-            output = resultado.final_output
-        except AttributeError:
-            output = str(resultado)
+        print("========================")
+        print(f"O tipo de 'resultado' é: {type(resultado)}")
+        print(f"[DEBUG] RESULTADO DA ANÁLISE: {resultado}")
+        print("========================")
 
-        salvar_resultado_json(output, os.path.join(OUTPUTDIR, "resultado_analise.json"))
+###        if isinstance(resultado, CrewOutput):
+###            if resultado.json_dict:
+###                output = resultado.json_dict
+###            else:
+###                output = resultado.raw
+###        else:
+###            output = resultado
 
-        json_path = os.path.join(OUTPUTDIR, "resultado_analise.json")
-        excel_path = os.path.join(OUTPUTDIR, "resultado_analise.xlsx")
+##        output = getattr(resultado, "final_output", None) or resultado
 
-        with open(json_path, 'r', encoding='utf-8') as f:
-            outer = json.load(f)
+#        try:
+#            output = resultado.final_output
+#        except AttributeError:
+#            output = str(resultado)
 
-        inner = json.loads(outer['resultado'])
-        md = inner['edital']
-        df = pd.DataFrame(inner['analises'])
+        salvar_resultado_json(resultado, os.path.join(OUTPUTDIR, "resultado_analise.json"))
+
+###        json_path = os.path.join(OUTPUTDIR, "resultado_analise.json")
+        resultado_dict = carregar_resultado_json(os.path.join(OUTPUTDIR, "resultado_analise.json"))
+        
+###        with open(json_path, 'r', encoding='utf-8') as f:
+###            outer = json.load(f)
+        
+###        resultado_raw = outer.get("resultado")
+###        print("[DEBUG] Resultado bruto:", resultado_raw)
+
+###        if isinstance(resultado_raw, str):
+###            try:
+###                inner = json.loads(resultado_raw)
+###            except json.JSONDecodeError as e:
+###                raise ValueError(f"Erro ao decodificar o campo 'resultado'. Conteúdo bruto:\n{resultado_raw}") from e
+###        elif isinstance(resultado_raw, dict):
+###            inner = resultado_raw
+###        else:
+###            raise ValueError(f"O formato inesperado do campo 'resultado': {type(resultado_raw)}")
+        
+#        inner = json.loads(outer['resultado'])
+        
+        md = resultado_dict['edital']
+        df = pd.DataFrame(resultado_dict['analises'])
         df = df.rename(columns={
             'numero_prompt': 'Número do prompt',
             'pergunta': 'Texto da pergunta',
@@ -51,6 +81,7 @@ def run(caminho_temporario: str):
             'fundamento_legal': 'Fundamentação legal'
         })
 
+        excel_path = os.path.join(OUTPUTDIR, "resultado_analise.xlsx")
         with pd.ExcelWriter(excel_path, engine='xlsxwriter') as writer:
             workbook = writer.book
             ws = workbook.add_worksheet('Análise')

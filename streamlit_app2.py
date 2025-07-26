@@ -4,22 +4,27 @@ import tempfile
 import json
 import pandas as pd
 from src.analista_licitacoes.main import run  # função run agora recebe o caminho como argumento
+from src.analista_licitacoes.utils.output_writer import carregar_resultado_json
+
 
 st.set_page_config(page_title="Análise de Licitações", page_icon="📄", layout="wide")
 st.title("📄 Análise de Licitações com IA")
 
+for key in ["analise_executada", "caminho_temp", "exibir_resultado", "excel_bytes"]:
+    if key not in st.session_state:
+        st.session_state[key] = False if key != "excel_bytes" else None
 # Inicializa o estado da sessão
-if "analise_executada" not in st.session_state:
-    st.session_state.analise_executada = False
+#if "analise_executada" not in st.session_state:
+#    st.session_state.analise_executada = False
 
-if "caminho_temp" not in st.session_state:
-    st.session_state.caminho_temp = None
+#if "caminho_temp" not in st.session_state:
+#    st.session_state.caminho_temp = None
 
-if "exibir_resultado" not in st.session_state:
-    st.session_state.exibir_resultado = False
+#if "exibir_resultado" not in st.session_state:
+#    st.session_state.exibir_resultado = False
 
-if "excel_bytes" not in st.session_state:
-    st.session_state.excel_bytes = None
+#if "excel_bytes" not in st.session_state:
+#    st.session_state.excel_bytes = None
 
 # Etapa 1: Upload dos arquivos
 if not st.session_state.exibir_resultado:
@@ -52,12 +57,11 @@ if not st.session_state.exibir_resultado:
                 excel_path = os.path.join("src", "analista_licitacoes", "output", "resultado_analise.xlsx")
 
                 if os.path.exists(resultado_path) and os.path.exists(excel_path):
-                    with open(resultado_path, "r", encoding="utf-8") as f:
-                        resultado = json.load(f)
+                    st.session_state.exibir_resultado = True    
+#                    with open(resultado_path, "r", encoding="utf-8") as f:
+#                        resultado = json.load(f)
                     with open(excel_path, "rb") as ef:
-                        st.session_state.excel_bytes = ef.read()
-
-                    st.session_state.exibir_resultado = True
+                        st.session_state.excel_bytes = ef.read()                  
                 else:
                     st.error("Resultado não encontrado. Verifique se a análise foi concluída.")
                     st.stop()
@@ -66,18 +70,19 @@ if not st.session_state.exibir_resultado:
 if st.session_state.exibir_resultado:
     resultado_path = os.path.join("src", "analista_licitacoes", "output", "resultado_analise.json")
     try:
-        with open(resultado_path, "r", encoding="utf-8") as f:
-            resultado = json.load(f)
-        inner = json.loads(resultado["resultado"])
-
+#        with open(resultado_path, "r", encoding="utf-8") as f:
+#            resultado = json.load(f)
+#        inner = json.loads(resultado["resultado"])
+        resultado = carregar_resultado_json(resultado_path
+                                            )
         st.subheader(":bookmark_tabs: Metadados Extraídos")
-        st.markdown(f"**Ente Licitante:** {inner['edital'].get('ente_licitante', '-')}")
-        st.markdown(f"**Número/Ano:** {inner['edital'].get('numero_ano_licitacao', '-')}")
-        st.markdown(f"**Modalidade:** {inner['edital'].get('modalidade_licitacao', '-')}")
-        st.markdown(f"**Objeto:** {inner['edital'].get('objeto_licitacao', '-')}")
+        st.markdown(f"**Ente Licitante:** {resultado['edital'].get('ente_licitante', '-')}")
+        st.markdown(f"**Número/Ano:** {resultado['edital'].get('numero_ano_licitacao', '-')}")
+        st.markdown(f"**Modalidade:** {resultado['edital'].get('modalidade_licitacao', '-')}")
+        st.markdown(f"**Objeto:** {resultado['edital'].get('objeto_licitacao', '-')}")
 
         st.subheader(":mag: Resultado da Análise")
-        df = pd.DataFrame(inner["analises"])
+        df = pd.DataFrame(resultado["analises"])
         st.dataframe(df, use_container_width=True)
 
         if st.session_state.excel_bytes:
@@ -90,8 +95,10 @@ if st.session_state.exibir_resultado:
 
         # Botão para reiniciar a análise
         if st.button("🔄 Nova Análise"):
-            st.session_state.exibir_resultado = False
-            st.session_state.excel_bytes = None
+            for key in ["analise_executada", "exibir_resultado", "excel_bytes"]:
+                st.session_state[key] = False if key != "excel_bytes" else None
+#            st.session_state.exibir_resultado = False
+#            st.session_state.excel_bytes = None
             st.rerun()
 
     except Exception as e:

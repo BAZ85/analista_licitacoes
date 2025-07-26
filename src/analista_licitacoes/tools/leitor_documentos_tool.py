@@ -12,14 +12,11 @@ def carregar_arquivos(pasta: str) -> list:
     """
     Extrai o conteúdo textual de todos os documentos na pasta informada.
     Aplica OCR em PDFs se necessário.
-    Retorna uma lista de dicionários com 'nome_arquivo' e 'conteudo'.
-
-    Parâmetros:
-    - pasta: Caminho para a pasta onde estão os arquivos a serem analisados.
-    """
+    Retorna uma lista de dicionários com 'nome_arquivo' e 'conteudo'.  
+    """       
     print(f"[DEBUG] Pasta recebida na tool: {pasta}")
-    documentos_extraidos = []
 
+    documentos_extraidos = []
     pasta_absoluta = os.path.abspath(pasta)
 
     if not os.path.exists(pasta_absoluta):
@@ -27,7 +24,6 @@ def carregar_arquivos(pasta: str) -> list:
 
     for nome_arquivo in os.listdir(pasta_absoluta):
         caminho = os.path.join(pasta_absoluta, nome_arquivo)
-
         if not os.path.isfile(caminho):
             continue
 

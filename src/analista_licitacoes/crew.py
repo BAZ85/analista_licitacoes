@@ -1,4 +1,5 @@
 from crewai import Agent, Crew, Process, Task
+from crewai.tools import tool
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
@@ -60,6 +61,7 @@ class AnalistaLicitacoes():
     def consolidador_respostas(self) -> Agent:
         return Agent(config=self.agents_config['consolidador_respostas'], verbose=True)
 
+
     # === Tasks ===
     @task
     def carregar_documentos(self) -> Task:
@@ -115,6 +117,13 @@ class AnalistaLicitacoes():
     @task
     def consolidar_respostas(self) -> Task:
         return Task(config=self.tasks_config['consolidar_respostas'])
+    
+#    @tool
+#    def leitor_documentos_tool(self):
+#        """
+#        Ferramento para leitura de documentos em diversos formatos
+#        """
+#        return carregar_arquivos
 
     # === Crew ===
     @crew
